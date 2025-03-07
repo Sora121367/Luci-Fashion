@@ -56,7 +56,7 @@
 
         <!-- Forgot Password -->
         <div class="mt-3 text-center">
-            <a href="{{ route('forgetpassword') }}" class="text-sm text-blue-500 hover:underline">Forgot password?</a>
+            <a href="{{ route('forgetpassword.post') }}" class="text-sm text-blue-500 hover:underline">Forgot password?</a>
         </div>
 
         <!-- OR Section -->

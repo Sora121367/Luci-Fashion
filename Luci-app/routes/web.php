@@ -7,14 +7,21 @@ Route::get('/', function () {
     return view('home');
 });
 
+// Authentication Routes
 Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('Auth.register');
-Route::get('/login', [AuthController::class, 'displayLogin'])->name('Auth.login');
-Route::get('/forgetpassword', [AuthController::class, 'displayForgetPW'])->name('Auth.forgetpw');
-Route::get('/create-password',[AuthController::class,'createPassword'])->name('Auth.createpassword');
-Route::get('/verify', [AuthController::class, 'displayVerifycode'])->name('verify'); // Updated route name for GET
-
 Route::post('/register', [AuthController::class, 'register'])->name('register.post');
+
+Route::get('/login', [AuthController::class, 'displayLogin'])->name('Auth.login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
-Route::post('/forgetpassword',[AuthController::class, 'forgetpassword'])->name('forgetpassword');
-Route::post('/create-password',[AuthController::class, 'createPassword'])->name('createPassword');
-Route::post('/verify', [AuthController::class, 'verifyCode'])->name('verify.code'); // Consistent with POST route
+
+Route::get('/forgetpassword', [AuthController::class, 'displayForgetPasswordForm'])->name('Auth.forgetpw');
+Route::post('/forgetpassword', [AuthController::class, 'forgetPassword'])->name('forgetpassword.post');
+
+Route::get('/verify-reset-code', [AuthController::class, 'displayVerifyResetCodeForm'])->name('password.verify');
+Route::post('/verify-reset-code', [AuthController::class, 'verifyResetCode'])->name('password.verify.post');
+
+Route::get('/create-password', [AuthController::class, 'displayCreatePassword'])->name('Auth.createpassword');
+Route::post('/create-password', [AuthController::class, 'createPassword'])->name('createPassword');
+
+Route::get('/verify', [AuthController::class, 'displayVerifycode'])->name('verify.show');
+Route::post('/verify', [AuthController::class, 'verifyCode'])->name('verify.code');
