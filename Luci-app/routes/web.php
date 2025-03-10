@@ -25,3 +25,56 @@ Route::post('/create-password', [AuthController::class, 'createPassword'])->name
 
 Route::get('/verify', [AuthController::class, 'displayVerifycode'])->name('verify.show');
 Route::post('/verify', [AuthController::class, 'verifyCode'])->name('verify.code');
+
+// User Route
+Route::get('/user-home',function(){
+    $products =[
+        ["src"=>"product-images/product-1.jpg","price"=>"$19.99","info"=>"Gangstar Outfit","id" => "1"],
+        ["src"=>"product-images/product-2.jpg","price"=>"$20.59","info"=>"Casual Round Neck","id" => "2"],
+        ["src"=>"product-images/product-3.jpg","price"=>"$25.42","info"=>"Bside with a gang","id" => "3"],
+    ];
+    return view('User.user-home',["products"=>$products]);
+});
+
+
+Route::get('/show-product/{id}', function ($id) {
+    $products = [
+        ["src" => "product-images/product-1.jpg", "price" => "$19.99", "info" => "Gangstar Outfit", "id" => "1"],
+        ["src" => "product-images/product-2.jpg", "price" => "$20.59", "info" => "Casual Round Neck", "id" => "2"],
+        ["src" => "product-images/product-3.jpg", "price" => "$25.42", "info" => "Bside with a gang", "id" => "3"],
+    ];
+
+    $product = null;
+    foreach ($products as $item) {
+        if ($item['id'] == $id) {
+            $product = $item;
+            break;
+        }
+    }
+
+    if (!$product) {
+        abort(404, "Product not found");
+    }
+
+    // Passing the $product variable to the view
+    return view('User.showproduct', compact('product'));
+});
+
+Route::get('/men-products',function(){
+    $products =[
+        ["src"=>"product-images/men-clothing.jpg","price"=>"$19.99","info"=>"Gangstar Outfit","id" => "1"],
+        ["src"=>"product-images/men-pants.jpg","price"=>"$20.59","info"=>"Casual Round Neck","id" => "2"],
+        ["src"=>"product-images/men-shirts.jpg","price"=>"$25.42","info"=>"Bside with a gang","id" => "3"],
+        ["src" => "product-images/product-1.jpg", "price" => "$19.99", "info" => "Gangstar Outfit", "id" => "4"],
+    ];
+    return view('User.men-products',["products"=>$products]);
+});
+
+Route::get('/women-products',function(){
+    $products =[
+        ["src"=>"product-images/women-1.jpg","price"=>"$19.99","info"=>"Gangstar Outfit","id" => "1"],
+        ["src"=>"product-images/women-2.jpg","price"=>"$20.59","info"=>"Casual Round Neck","id" => "2"],
+        ["src"=>"product-images/women-3.jpg","price"=>"$25.42","info"=>"Bside with a gang","id" => "3"],
+    ];
+    return view('User.women-products',["products"=>$products]);
+});
