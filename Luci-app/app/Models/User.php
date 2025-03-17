@@ -11,6 +11,7 @@ use Laravel\Sanctum\HasApiTokens;
 class User extends Authenticatable
 {
     
+ protected $guard = 'web';
     /**
      * The attributes that are mass assignable.
      *
@@ -25,7 +26,8 @@ class User extends Authenticatable
         'password',
         'verification_code',
         'reset_code',
-        'gender'
+        'gender',
+        'google_id',
     ];
 
     /**
