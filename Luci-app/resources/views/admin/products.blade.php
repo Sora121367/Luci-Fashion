@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard</title>
+    <title>Admin Dashboard-Products</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
     <!-- Chart.js Library -->
@@ -124,69 +124,6 @@
                 <div class="border-b-2 border-gray-400 mt-4 w-1/4 mx-auto"></div>
             </div>
         </main>
-
-        <!-- Popular Products Section -->
-        <div class="mt-6 border border-gray-400 bg-white p-6 rounded-lg shadow-md w-80">
-            <h2 class="text-2xl font-semibold mb-4">Popular Products</h2>
-            <ul class="space-y-4">
-                <li class="flex items-center justify-between border-b pb-2">
-                    <div class="flex items-center space-x-4">
-                        <img src="web-images/location-image.jpg" alt="Product 1" class="w-12 h-12 rounded-md">
-                    </div>
-                    <span class="text-green-500 font-semibold">$150</span>
-                </li>
-                <li class="flex items-center justify-between border-b pb-2">
-                    <div class="flex items-center space-x-4">
-                        <img src="web-images/dress.png" alt="Product 2" class="w-12 h-12 rounded-md">
-                    </div>
-                    <span class="text-green-500 font-semibold">$120</span>
-                </li>
-                <li class="flex items-center justify-between border-b pb-2">
-                    <div class="flex items-center space-x-4">
-                        <img src="/web-images/dress.png" alt="Product 3" class="w-12 h-12 rounded-md">
-                    </div>
-                    <span class="text-green-500 font-semibold">$90</span>
-                </li>
-                <li class="flex items-center justify-between">
-                    <div class="flex items-center space-x-4">
-                        <img src="web-images/location-image.jpg" alt="Product 4" class="w-12 h-12 rounded-md">
-                    </div>
-                    <span class="text-green-500 font-semibold">$80</span>
-                </li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- JavaScript for Chart.js -->
-    <script>
-        var ctx = document.getElementById('salesChart').getContext('2d');
-        var salesChart = new Chart(ctx, {
-            type: 'bar', // Bar graph
-            data: {
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'], // X-axis labels (months)
-                datasets: [{
-                    label: 'Sales ($)',
-                    data: [1000, 1200, 1500, 1100, 1700, 1800], // Sample sales data
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)', // Bar color
-                    borderColor: 'rgba(75, 192, 192, 1)', // Bar border color
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'top'
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
-    </script>
 
 </body>
 </html>
