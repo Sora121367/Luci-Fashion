@@ -1,13 +1,16 @@
 <?php
-
 use App\Http\Controllers\Auth\AuthController;
 use Illuminate\Support\Facades\Route;
 
+// Home Page
 Route::get('/', function () {
     return view('home');
 });
 
 // Authentication Routes
+Route::get('/auth/google', [AuthController::class, 'redirectToGoogle'])->name('google.redirect');
+Route::get('/auth/google/callback', [AuthController::class, 'handleGoogle']);
+
 Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('Auth.register');
 Route::post('/register', [AuthController::class, 'register'])->name('register.post');
 
@@ -25,6 +28,23 @@ Route::post('/create-password', [AuthController::class, 'createPassword'])->name
 
 Route::get('/verify', [AuthController::class, 'displayVerifycode'])->name('verify.show');
 Route::post('/verify', [AuthController::class, 'verifyCode'])->name('verify.code');
+
+// Logout Route
+// Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+// Protected Routes for Users
+Route::middleware(['auth:web'])->group(function () {
+    Route::get('/user/dashboard', function () {
+        return view('user.dashboard');
+    })->name('user.dashboard');
+});
+
+// Protected Routes for Admins
+Route::middleware(['auth:admin'])->group(function () {
+    Route::get('/admin/dashboard', function () {
+        return view('admin.dashboard');
+    })->name('admin.dashboard');
+});
 
 // User Route
 Route::get('/user-home',function(){

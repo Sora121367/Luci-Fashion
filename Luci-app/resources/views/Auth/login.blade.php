@@ -62,9 +62,9 @@
         <!-- OR Section -->
         <div class="my-4 flex flex-col items-center">
             <p class="text-sm text-gray-500">Or</p>
-            <button class="w-full bg-gray-100 px-4 py-3 rounded-md text-sm font-semibold hover:bg-gray-300 transition mt-2">
-                Continue with Facebook
-            </button>
+            <a href="{{ route('google.redirect') }}" class="w-full bg-gray-100 px-4 py-3 rounded-md text-sm font-semibold hover:bg-gray-300 transition mt-2 text-center">
+                Continue with Google
+            </a>
         </div>
 
         <!-- Register Section -->

@@ -7,6 +7,8 @@ use App\Http\Controllers\Controller;
 use App\Mail\ResetPasswordMail;
 use App\Mail\VerifyEmail;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
@@ -17,6 +19,7 @@ use Illuminate\Support\Facades\Password;
 
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Mail;
+use Laravel\Socialite\Facades\Socialite;
 
 class AuthController extends Controller
 {
@@ -42,6 +45,7 @@ class AuthController extends Controller
                 'email' => $validated['email'],
                 'password' => Hash::make($validated['password']),
                 'city' => $validated['city'],
+                'role' => 'user', // Default role
                 'gender' => $validated['gender'],
                 'verification_code' => $verification_code
             ]);
@@ -62,34 +66,80 @@ class AuthController extends Controller
     }
 
 
-    public function login(Request $request)
+
+public function login(Request $request)
+{
+    $credentials = $request->only('email', 'password');
+    
+    if(Auth::check()){
+        return redirect('home');
+    }
+    // Check if it's an admin login
+    if (Auth::guard('admin')->attempt($credentials)) {
+        return redirect()->route('admin.dashboard');
+    }
+
+    // Check if it's a user login
+    if (Auth::guard('web')->attempt($credentials)) {
+        return redirect()->route('user.dashboard');
+    }
+
+    return back()->withErrors(['email' => 'Invalid credentials.']);
+}
+
+    
+
+
+    public function redirectToGoogle()
+    {
+        return Socialite::driver('google')->redirect();
+    }
+
+    public function handleGoogle()
     {
         try {
-            $validated = $request->validate([
-                'email' => 'required|email',
-                'password' => 'required|min:8',
-            ]);
+            // Retrieve the Google user information
+            $googleUser = Socialite::driver('google')->user();
+    
+            $findUser = User::where('google_id', $googleUser->id)->first();
 
-            $user = User::where('email', $validated['email'])->first();
-
-            if (!$user) {
-                return redirect()->back()->withErrors(['email' => 'The email address is not registered.'])->withInput();
+    
+            if ($findUser) {
+                // If the user exists, log them in
+                Auth::login($findUser);
+                return redirect()->intended('/');
+            } else {
+              
+                $googleUserData = [
+                    'google_id' => $googleUser->id,
+                    'email' => $googleUser->email,
+                    'Firstname' => $googleUser->user['given_name'] ?? '', 
+                    'Lastname' => $googleUser->user['family_name'] ?? '',
+                    'role' => 'user',
+                    'city' => 'Unknown', 
+                    'gender' => 'Unknown', 
+                    'phonenumber' => 'Unknown', 
+                    'password' => bcrypt('default_password'),
+                ];
+    
+                // Create or update the user
+                $user = User::create($googleUserData);
+    
+                // Log the user in
+                Auth::login($user);
+    
+                return redirect('/'); // Redirect the user after login
             }
-
-            if (!Hash::check($validated['password'], $user->password)) {
-                return redirect()->back()->withErrors(['password' => 'Incorrect password.'])->withInput();
-            }
-
-            // // Generate token
-            // $token = $user->createToken('auth_token')->plainTextToken;
-
-            return redirect('/')->with('success', 'Login successful!');
-        } catch (ValidationException $e) {
-            return redirect()->back()->withErrors($e->errors())->withInput();
         } catch (Exception $e) {
-            return redirect()->back()->with('error', 'An unexpected error occurred.');
+            // Return JSON response in case of failure
+            return response()->json([
+                'error' => 'Google login failed. Please try again.',
+                'exception' => $e->getMessage()
+            ], 400);
         }
     }
+    
+
 
     public function verifyCode(Request $request)
     {
@@ -125,89 +175,89 @@ class AuthController extends Controller
     // {
     //     return redirect('/')->with('success', 'register successful!');
     // }
-    
-        
-        
-       
+
+
+
+
 
     public function verifyResetCode(Request $request)
     {
         $request->validate([
             'code' => 'required|numeric|digits:6',
         ]);
-    
+
         $user = User::where('reset_code', $request->code)->first();
-    
+
         if (!$user) {
             return redirect()->back()->withErrors(['code' => 'Invalid or expired reset code.']);
         }
-    
+
         // Clear the reset code after successful verification
         $user->update([
             'reset_code' => null,
         ]);
-    
+
         return redirect()->route('Auth.createpassword', ['email' => $user->email])
             ->with('success', 'Code verified! Set your new password.');
     }
-    
-    
-    
-        // // Display reset password form
-        // public function displayResetPasswordForm(Request $request)
-        // {
-        //     return view('Auth.createpassword', ['email' => $request->email]);
-        // }
-    
-        public function createPassword(Request $request)
-        {
-            $request->validate([
-                'email' => 'required|email|exists:users,email',
-                'password' => 'required|min:6|confirmed',
-            ]);
-        
-            $user = User::where('email', $request->email)->first();
-        
-            if (!$user) {
-                return redirect()->back()->withErrors(['email' => 'Invalid request.']);
-            }
-        
-            // Update password and clear reset fields
-            $user->update([
-                'password' => Hash::make($request->password),
-                'reset_code' => null,
-                'reset_code_expires_at' => null
-            ]);
-        
-            return redirect('/')->with('success', 'Password reset successful! You can now log in.');
+
+
+
+    // // Display reset password form
+    // public function displayResetPasswordForm(Request $request)
+    // {
+    //     return view('Auth.createpassword', ['email' => $request->email]);
+    // }
+
+    public function createPassword(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email|exists:users,email',
+            'password' => 'required|min:6|confirmed',
+        ]);
+
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user) {
+            return redirect()->back()->withErrors(['email' => 'Invalid request.']);
         }
-        
-        
-        
-        
-    
-        public function forgetPassword(Request $request)
-        {
-            $request->validate([
-                'email' => 'required|email|exists:users,email',
-            ]);
-        
-            $user = User::where('email', $request->email)->first();
-        
-            $reset_code = rand(100000, 999999);
-            $user->reset_code = $reset_code;
-            $user->save();
-        
-            Mail::to($user->email)->send(new ResetPasswordMail($reset_code));
-        
-            return redirect()->route('password.verify')->with([
-                'success' => 'A password reset code has been sent to your email.',
-                'email' => $user->email
-            ]);
-        }
-        
-    
-    
+
+        // Update password and clear reset fields
+        $user->update([
+            'password' => Hash::make($request->password),
+            'reset_code' => null,
+            'reset_code_expires_at' => null
+        ]);
+
+        return redirect('/')->with('success', 'Password reset successful! You can now log in.');
+    }
+
+
+
+
+
+    public function forgetPassword(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email|exists:users,email',
+        ]);
+
+        $user = User::where('email', $request->email)->first();
+
+        $reset_code = rand(100000, 999999);
+        $user->reset_code = $reset_code;
+        $user->save();
+
+        Mail::to($user->email)->send(new ResetPasswordMail($reset_code));
+
+        return redirect()->route('password.verify')->with([
+            'success' => 'A password reset code has been sent to your email.',
+            'email' => $user->email
+        ]);
+    }
+
+
+
 
     public function displayVerifycode()
     {
