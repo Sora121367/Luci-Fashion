@@ -113,6 +113,19 @@
                         <label class="block font-medium">Price:</label>
                         <input type="text" name="price" class="border border-gray-400 w-full px-3 py-2 rounded-md">
                     </div>
+
+                    <!-- Choose Size (Multiple Options with Checkboxes) -->
+                    <div class="mb-4">
+                        <label class="block font-medium">Choose Size:</label>
+                        <div class="space-y-2">
+                            @foreach(['S', 'M', 'L', 'XL', 'XXL'] as $size)
+                                <label class="inline-flex items-center">
+                                    <input type="checkbox" name="sizes[]" value="{{ $size }}" class="form-checkbox h-5 w-5 text-gray-600">
+                                    <span class="ml-2">{{ $size }}</span>
+                                </label>
+                            @endforeach
+                        </div>
+                    </div>
                     
                     <!-- Description -->
                     <div class="mb-4">

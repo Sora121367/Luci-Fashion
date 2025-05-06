@@ -91,6 +91,7 @@
                             <th class="border border-gray-300 p-2">Product Name</th>
                             <th class="border border-gray-300 p-2">Category / Sub-Category</th>
                             <th class="border border-gray-300 p-2">Price</th>
+                            <th class="border border-gray-300 p-2">Size</th>
                             <th class="border border-gray-300 p-2">Description</th>
                             <th class="border border-gray-300 p-2">Status</th>
                             <th class="border border-gray-300 p-2">Actions</th>
@@ -109,6 +110,12 @@
                                 </td>
                                 <td class="border border-gray-300 p-2">{{ $product->category }} / {{ $product->sub_category }}</td>
                                 <td class="border border-gray-300 p-2">${{ $product->price }}</td>
+                                <td class="border border-gray-300 p-2">
+                                    @php
+                                        $sizes = json_decode($product->sizes, true);
+                                    @endphp
+                                    {{ is_array($sizes) ? implode(', ', $sizes) : 'N/A' }}
+                                </td>
                                 <td class="border border-gray-300 p-2">{{ $product->description }}</td>
                                 <td class="border border-gray-300 p-2">{{ ucfirst($product->status) }}</td>
                                 <td class="border border-gray-300 p-2">
