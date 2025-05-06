@@ -4,21 +4,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Luci-Fashion</title>
   @vite(['resources/css/app.css']) {{-- Make sure this is included --}}
+  @livewireStyles
 
 </head>
 <body>
   <nav class="flex justify-between p-4 mx-28">
     <ul class="flex space-x-4 text-black text-xl">
-      <a href="/homepage">
+      <a href="/home-user">
         <li class="hover:text-gray-500">HOME</li>
       </a>
       <a href="/men-products">
         <li class="hover:text-gray-500">MEN</li>
       </a>
-      <a href="women-products">
+      <a href="/women-products">
         <li class="hover:text-gray-500">WOMEN</li>
       </a>
-      <a href="/">
+      <a href="/home-user">
         <li class="hover:text-gray-500">CONTACT US</li>
       </a>
     </ul>
@@ -26,9 +27,11 @@
       <img src="{{ asset('web-images/luci-logo.jpg') }}" alt="Logo Image" class="w-25 h-12"/>
       <input type="text" placeholder="Search" class="border rounded-lg p-2">
       <ul class="flex space-x-2">
-        <img src="{{ asset('web-images/love.jpg') }}" alt="Favorite Button" class="w-6 h-6">
-        <img src="{{ asset('web-images/notification.jpg') }}" alt="Notification" class="w-8 h-8">
-        <img src="{{ asset('web-images/shopping-bag.jpg') }}" alt="Shopping Bag" class="w-8 h-8">
+        <a href="/user-favorite">
+          <img src="{{ asset('web-images/love.jpg') }}" alt="Favorite Button" class="w-6 h-6">
+        </a>
+        <livewire:notifications />
+        <livewire:cart-modal />
       </ul>
       <ul class="flex space-x-4">
         <li class="text-black text-xl font-semibold">Login</li>
@@ -89,5 +92,6 @@
     <hr class="border-t-2 border-gray-300 ml-18 pb-2">
     <p class="text-right p-2">&copy; <span>2025</span> Luci. All rights reserved.</p>
   </footer>
+  @livewireScripts
 </body>
 </html>
