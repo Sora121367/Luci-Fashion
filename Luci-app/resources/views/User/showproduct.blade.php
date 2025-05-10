@@ -47,7 +47,7 @@
         {{-- <button wire:click="addToBagItem({{ $product }})" class="flex-1 bg-black hover:bg-gray-800 text-white py-3 px-6 rounded-lg font-medium transition shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
           Add to Bag
         </button>  --}}
-        <livewire:addto-bag-btn :productId="$product->id" :image_path="$product->image_path"/>
+        <livewire:addto-bag-btn :productId="$product->id" />
         <button class="p-3 bg-gray-100 hover:bg-gray-200 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600 hover:text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />

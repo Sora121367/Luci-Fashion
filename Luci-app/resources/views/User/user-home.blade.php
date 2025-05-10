@@ -33,13 +33,13 @@
   <div class="p-4 mx-28">
     <h1 class="text-5xl font-extrabold pb-4">NEW PANTS</h1>
   </div>
-  <div class="p-4 mx-28">
+  {{-- <div class="p-4 mx-28">
     <ul class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
         @foreach ($products as $product)
             <x-card src="{{$product['src']}}"></x-card>
         @endforeach
     </ul>
- </div>
+ </div> --}}
 
   <div class="bg-black text-white flex justify-between p-4 w-full h-fit gap-10">
     <div class="p-4 mx-8 flex flex-col w-140 h-auto relative">

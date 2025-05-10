@@ -9,13 +9,11 @@ class AddtobagBtn extends Component
     public $size;
     public $quantity = 1; // default
     public $productId;
-    public $image_path;
 
     protected $listeners = ['sizeSelected', 'quantityUpdated'];
 
-    public function mount($productId,$image_path){
+    public function mount($productId){
         $this->productId = $productId;
-        $this->image_path = $image_path;
         logger("Mounted with Product ID: " . $productId); // Or use dd($productId);
     }
 
@@ -38,9 +36,8 @@ class AddtobagBtn extends Component
 
         $this->dispatch('addToBagItem', [
             'quantity' => $this->quantity,
-            'product_id' => $this->productId,// replace with actual product info
+            'product_id' => $this->productId,
             'size' => strtolower($this->size),
-            'image_path' => $this->image_path,
         ]);
 
         

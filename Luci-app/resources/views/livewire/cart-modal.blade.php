@@ -44,8 +44,8 @@
                             <div class="flex gap-3">
                                 <img src="{{ asset(str_replace('\\', '/', $product['image_path'])) }}" alt="" class="w-[150px] h-[180px] object-cover rounded">
                                 <div class="flex-1 space-y-2">
-                                    <p class="text-lg font-semibold"> $product['name']</p>
-                                    <p class="text-gray-600">US $ product['price']</p>
+                                    <p class="text-lg font-semibold"> {{$product['name']}}</p>
+                                    <p class="text-gray-600">US ${{$product['price']}}</p>
                                     
                                     <div class="flex justify-between gap-4 mt-2">
                                         <div>
