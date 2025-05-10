@@ -2,11 +2,11 @@
 namespace App\Livewire;
 
 use Livewire\Component;
-// use App\Models\Cart;
-// use App\Models\CartItem;
-// use App\Models\Product;
+use App\Models\Cart;
+use App\Models\CartItem;
+use App\Models\Product;
 // use Illuminate\Support\Facades\Auth;
-// use Illuminate\Support\Str;
+use Illuminate\Support\Str;
 
 class CartModal extends Component
 {
@@ -23,19 +23,67 @@ class CartModal extends Component
         $this->products = session('cart_products', []);
     }
 
-    public function addToBagItem($product)
-    {
-        // Debug logging
-        logger('Adding to bag with size: ' . $product['size']);
+    // public function addToBagItem($product)
+    // {
+    //     // Debug logging
+    //     logger('Adding to bag with size: ' . $product['size']);
         
-        // Add the new product
-        $this->products[] = $product;
+    //     // Add the new product
+    //     $this->products[] = $product;
         
-        // Save to session for persistence
-        session(['cart_products' => $this->products]);
+    //     // Save to session for persistence
+    //     session(['cart_products' => $this->products]);
         
-        // After adding, check what's in the array
-        logger('Cart products: ' . json_encode($this->products));
+    //     // After adding, check what's in the array
+    //     logger('Cart products: ' . json_encode($this->products));
+    // }
+    public function addToBagItem($productData)
+    {   
+    logger('Adding to bag with size: ' . $productData['size']);
+
+    // Fetch product from DB
+    $product = Product::findOrFail($productData['product_id']);
+
+    // Build item array (session only stores what's needed)
+    $item = [
+        'id' => $product->id,
+        'size' => $productData['size'],
+        'quantity' => $productData['quantity'] ?? 1,
+        'image_path' => $product->image_path,
+        'price' => $product->price,
+        'name' => $product->name,
+    ];
+
+    // Save to session
+    $this->products[] = $item;
+    session(['cart_products' => $this->products]);
+
+    // Create or get cart
+    $cart = Cart::firstOrCreate(
+        [
+            // 'user_id' => Auth::id(),
+            'id' => (string) Str::uuid(),
+            'session_id' => session()->getId(),
+        ]
+    );
+
+    // Save to database
+    if (isset($product->id)) {
+        CartItem::create([
+            'id' => (string) Str::uuid(),
+            'cart_id' => $cart->id,
+            'products_id' => $product->id,
+            'size' => $item['size'],
+            'quantity' => $item['quantity'],
+            'price' => $product->price, // from DB
+        ]);
+    } else {
+        // Handle error: product_id is missing
+        logger('Product ID is missing for CartItem creation');
+    }
+
+
+    logger('Cart updated: ' . json_encode($this->products));
     }
 
     public function getProductQuantityProperty()
