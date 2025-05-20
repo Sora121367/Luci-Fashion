@@ -18,14 +18,20 @@
 
         <!-- Page Content (Logout Confirmation) -->
         <main class="flex-1 p-6 flex justify-center items-center">
-            <div class="bg-white p-8 rounded-lg shadow-md w-96 text-center">
+            <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-md text-center" role="dialog" aria-modal="true">
                 <h2 class="text-2xl font-semibold mb-6">Are you sure you want to log out?</h2>
                 <p class="text-sm text-gray-600 mb-6">You will be logged out and redirected to the login page.</p>
                 <div class="flex justify-center gap-6">
                     <!-- Cancel Button -->
                     <a href="/dashboard" class="bg-gray-300 text-gray-800 px-6 py-2 rounded-md hover:bg-gray-400">Cancel</a>
-                    <!-- Confirm Logout Button -->
-                    <a href="/logout/confirm" class="bg-black text-white px-6 py-2 rounded-md hover:bg-gray-700">Log Out</a>
+
+                    <!-- Confirm Logout Button as POST -->
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit" class="bg-black text-white px-6 py-2 rounded-md hover:bg-gray-700">
+                            Log Out
+                        </button>
+                    </form>
                 </div>
             </div>
         </main>

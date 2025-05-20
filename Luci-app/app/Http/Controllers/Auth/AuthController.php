@@ -67,27 +67,37 @@ class AuthController extends Controller
 
 
 
-public function login(Request $request)
-{
-    $credentials = $request->only('email', 'password');
-    
-    if(Auth::check()){
-        return redirect('home');
-    }
-    // Check if it's an admin login
-    if (Auth::guard('admin')->attempt($credentials)) {
-        return redirect()->route('admin.dashboard');
+    public function login(Request $request)
+    {
+        $credentials = $request->only('email', 'password');
+
+        if (Auth::check()) {
+            return redirect('home');
+        }
+        // Check if it's an admin login
+        if (Auth::guard('admin')->attempt($credentials)) {
+            return redirect()->route('admin.dashboard');
+        }
+
+        // Check if it's a user login
+        if (Auth::guard('web')->attempt($credentials)) {
+            return redirect('/');
+        }
+
+        return back()->withErrors(['email' => 'Invalid credentials.']);
     }
 
-    // Check if it's a user login
-    if (Auth::guard('web')->attempt($credentials)) {
-        return redirect()->route('user.dashboard');
+
+    public function logout(Request $request)
+    {
+        Auth::logout(); // Logs the user out
+
+        $request->session()->invalidate(); // Invalidate the session
+        $request->session()->regenerateToken(); // Prevent CSRF attacks
+
+        return redirect('/login')->with('success', 'You have been logged out.');
     }
 
-    return back()->withErrors(['email' => 'Invalid credentials.']);
-}
-
-    
 
 
     public function redirectToGoogle()
@@ -100,34 +110,34 @@ public function login(Request $request)
         try {
             // Retrieve the Google user information
             $googleUser = Socialite::driver('google')->user();
-    
+
             $findUser = User::where('google_id', $googleUser->id)->first();
 
-    
+
             if ($findUser) {
                 // If the user exists, log them in
                 Auth::login($findUser);
                 return redirect()->intended('/');
             } else {
-              
+
                 $googleUserData = [
                     'google_id' => $googleUser->id,
                     'email' => $googleUser->email,
-                    'Firstname' => $googleUser->user['given_name'] ?? '', 
+                    'Firstname' => $googleUser->user['given_name'] ?? '',
                     'Lastname' => $googleUser->user['family_name'] ?? '',
                     'role' => 'user',
-                    'city' => 'Unknown', 
-                    'gender' => 'Unknown', 
-                    'phonenumber' => 'Unknown', 
+                    'city' => 'Unknown',
+                    'gender' => 'Unknown',
+                    'phonenumber' => 'Unknown',
                     'password' => bcrypt('default_password'),
                 ];
-    
+
                 // Create or update the user
                 $user = User::create($googleUserData);
-    
+
                 // Log the user in
                 Auth::login($user);
-    
+
                 return redirect('/'); // Redirect the user after login
             }
         } catch (Exception $e) {
@@ -138,7 +148,7 @@ public function login(Request $request)
             ], 400);
         }
     }
-    
+
 
 
     public function verifyCode(Request $request)
@@ -292,10 +302,20 @@ public function login(Request $request)
         return view('Auth.register');
     }
 
-    public function displayLogin()
+    public function showLoginForm()
     {
-        return view('Auth.login');
+        if (Auth::guard('admin')->check()) {
+            return redirect()->route('admin.dashboard');
+        }
+        if (Auth::guard('web')->check()) {
+            return redirect('/'); 
+        }
+
+
+        return view('auth.login');
     }
+
+
 
     public function displayForgetPW()
     {
