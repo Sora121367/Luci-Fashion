@@ -2,22 +2,48 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Str;
 
 class Product extends Model
 {
-    use HasUuids;
+    use HasFactory;
 
-    protected $fillable = ['category_id', 'name', 'description','image_path'];
+    public $incrementing = false;
+    protected $keyType = 'string';
 
-    /**
-     * Get the category that owns the product
-     */
-    public function category(): BelongsTo
+    protected $fillable = [
+        'name',
+        'category_id',
+        'price',
+        // 'size',
+        'description',
+        'image_path',
+        // 'status',
+    ];
+
+    // No need to cast 'size' since it's stored as ENUM (string)
+    // protected $casts = ['size' => 'array'];
+
+    protected static function boot()
     {
-        return $this->belongsTo(Category::class);
+        parent::boot();
+
+        static::creating(function ($model) {
+            if (empty($model->id)) {
+                $model->id = (string) Str::uuid();
+            }
+        });
     }
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class, 'category_id');
+    }
+    // In Category.php
+    public function parent() {
+        return $this->belongsTo(Category::class, 'parent_id');
+    }
+
 }

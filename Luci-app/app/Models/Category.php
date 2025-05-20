@@ -2,38 +2,30 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Str;
 
 class Category extends Model
 {
-    use HasUuids;
+    public $incrementing = false; // important for UUIDs
+    protected $keyType = 'string'; // UUIDs are strings
 
-    protected $fillable = ['name', 'parent_id'];
+    protected $fillable = ['id', 'name', 'parent_id'];
 
-    /**
-     * Get the parent category
-     */
-    public function parent(): BelongsTo
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            if (empty($model->id)) {
+                $model->id = (string) Str::uuid();
+            }
+        });
+    }
+    // This allows a sub-category to access its main category
+    public function parent()
     {
         return $this->belongsTo(Category::class, 'parent_id');
     }
 
-    /**
-     * Get the subcategories for this category
-     */
-    public function children(): HasMany
-    {
-        return $this->hasMany(Category::class, 'parent_id');
-    }
-
-    /**
-     * Get the products for this category
-     */
-    public function products(): HasMany
-    {
-        return $this->hasMany(Product::class);
-    }
 }
