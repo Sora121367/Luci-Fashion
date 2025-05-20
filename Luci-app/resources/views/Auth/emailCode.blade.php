@@ -1,13 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
-    @vite(['resources/css/app.css'])
-</head>
-<body>
+<x-layout>
+    <div>
     <form action="" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
 
         <div class="bg-white p-6 rounded-lg shadow-md w-[24rem]">
@@ -25,5 +17,5 @@
 
         </div>
     </form>
-</body>
-</html>
+</div>
+</x-layout>

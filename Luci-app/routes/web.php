@@ -3,14 +3,10 @@ use App\Http\Controllers\Auth\AuthController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\admin\ProductController;
 use App\Http\Controllers\User\UserProductController;
-use App\Http\Controllers\admin\CategoryController;
-use App\Models\Category;
-
-
 // Home Page
-Route::get('/', function () {
-    return view('home');
-});
+// Route::get('/', function () {
+//     return view('home');
+// });
 
 // Authentication Routes
 Route::get('/auth/google', [AuthController::class, 'redirectToGoogle'])->name('google.redirect');
@@ -19,9 +15,8 @@ Route::get('/auth/google/callback', [AuthController::class, 'handleGoogle']);
 Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('Auth.register');
 Route::post('/register', [AuthController::class, 'register'])->name('register.post');
 
-Route::get('/login', [AuthController::class, 'displayLogin'])->name('Auth.login');
+Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
-
 Route::get('/forgetpassword', [AuthController::class, 'displayForgetPasswordForm'])->name('Auth.forgetpw');
 Route::post('/forgetpassword', [AuthController::class, 'forgetPassword'])->name('forgetpassword.post');
 
@@ -31,28 +26,18 @@ Route::post('/verify-reset-code', [AuthController::class, 'verifyResetCode'])->n
 Route::get('/create-password', [AuthController::class, 'displayCreatePassword'])->name('Auth.createpassword');
 Route::post('/create-password', [AuthController::class, 'createPassword'])->name('createPassword');
 
-Route::get('/verify', [AuthController::class, 'displayVerifycode'])->name('verify.show');
-Route::post('/verify', [AuthController::class, 'verifyCode'])->name('verify.code');
+  Route::get('/verify', [AuthController::class, 'displayVerifycode'])->name('verify.show');
+    Route::post('/verify', [AuthController::class, 'verifyCode'])->name('verify.code');
 
 // Logout Route
-// Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-// Protected Routes for Users
-Route::middleware(['auth:web'])->group(function () {
-    Route::get('/user-home', function () {
-        return view('user.user-home');
-    })->name('user.user-home');
-});
 
-// Protected Routes for Admins
-Route::middleware(['auth:admin'])->group(function () {
-    Route::get('/admin/dashboard', function () {
-        return view('admin.dashboard');
-    })->name('admin.dashboard');
-});
+
+
 
 // User Route
-Route::get('/home-user', [UserProductController::class, 'index']);
+Route::get('/', [UserProductController::class, 'index']);
 
 
 Route::get('/show-product/{id}',[UserProductController::class,'show']);
@@ -94,65 +79,80 @@ Route::get('/checkout',function(){
     return view('User.checkout',["products"=>$products]);
 });
 
-//admin pages
-Route::get('/dashboard', function () {
-    return view('admin.dashboard');
-});
-Route::get('/customers', function () {
-    return view('admin.customers');
-});
-Route::get('/categories', function () {
-    return view('admin.categorylist');
-});
-Route::get('/report', function () {
-    return view('admin.report');
-});
-Route::get('/sales', function () {
-    return view('admin.sales');
-});
-Route::get('/setting', function () {
-    return view('admin.setting');
-});
-Route::get('/logout', function () {
-    return view('admin.logout');
+//admin
+// Route::get('/dashboard', function () {
+//     return view('admin.dashboard');
+// });
+// Route::get('/customers', function () {
+//     return view('admin.customers');
+// });
+// Route::get('/categories', function () {
+//     return view('admin.categories');
+// });
+// Route::get('/report', function () {
+//     return view('admin.report');
+// });
+// Route::get('/sales', function () {
+//     return view('admin.sales');
+// });
+// Route::get('/setting', function () {
+//     return view('admin.setting');
+// });
+// Route::get('/logout', function () {
+//     return view('admin.logout');
+// });
+
+
+/*
+|--------------------------------------------------------------------------
+| User-Protected Routes (auth:web)
+|--------------------------------------------------------------------------
+*/
+
+
+Route::middleware(['web'])->group(function () {
+  
+    
 });
 
-// admin route 
+
+
+// Admin Protected Routes
+Route::middleware(['admin'])->group(function () {
+    Route::get('/dashboard', function () {
+        return view('admin.dashboard');
+    })->name('admin.dashboard');
+
+    Route::get('/customers', function () {
+        return view('admin.customers');
+    })->name('admin.customers');
+
+    Route::get('/categories', function () {
+        return view('admin.categories');
+    })->name('admin.categories');
+
+    Route::get('/report', function () {
+        return view('admin.report');
+    })->name('admin.report');
+
+    Route::get('/sales', function () {
+        return view('admin.sales');
+    })->name('admin.sales');
+
+    Route::get('/setting', function () {
+        return view('admin.setting');
+    })->name('admin.setting');
+
+    Route::get('/logout', function () {
+        return view('admin.logout');
+    })->name('admin.logout');
+});
+
+
 Route::get('/productlist', [ProductController::class, 'index'])->name('admin.productlist');
 Route::get('/newproducts', function () {
     return view('admin.newproducts');
 });
-
-//NewCategory 
-Route::get('/newcategory', function () {
-    return view('admin.newcategory');
-});
-
-Route::get('/newcategory', function () {
-    // Pass categories to the view so parent options can be selected
-    $categories = Category::all();
-    return view('admin.newcategory', compact('categories'));
-});
-
-Route::get('/newproducts', function () {
-    // Fetch categories where parent_id is null for main categories and others for subcategories
-    $mainCategories = Category::whereNull('parent_id')->get();
-    $subCategories = Category::whereNotNull('parent_id')->get();
-    return view('admin.newproducts', compact('mainCategories', 'subCategories'));
-});
-
-
-Route::post('savecategory', [CategoryController::class, 'store'])->name('admin.savecategory');
-Route::get('/categorylist', [CategoryController::class, 'index'])->name('admin.categorylist'); 
-Route::get('/categories', [CategoryController::class, 'create'])->name('admin.categories');
-// Route::post('/savecategory', [CategoryController::class, 'store']);
-
-Route::get('editcategory/{id}', [CategoryController::class, 'edit']);
-Route::post('updatecategory/{id}', [CategoryController::class, 'update']);
-Route::delete('deletecategory/{id}', [CategoryController::class, 'destroy']);
-
-Route::post('saveproduct', [ProductController::class, 'store']);
-
+Route::get('/productlist', [ProductController::class, 'index'])->name('admin.productlist');
+Route::post('/saveproduct', [ProductController::class, 'store'])->name('admin.saveproduct');
 Route::delete('/productlist/{id}', [ProductController::class, 'destroy'])->name('admin.destroy');
-Route::get('editproducts/{id}', [ProductController::class, 'edit']);
-Route::post('updateproducts/{id}', [ProductController::class, 'update']);
