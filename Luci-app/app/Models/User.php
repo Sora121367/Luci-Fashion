@@ -28,6 +28,7 @@ class User extends Authenticatable
         'reset_code',
         'gender',
         'google_id',
+        'is_verified',
     ];
 
     /**
@@ -48,6 +49,7 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
+            'is_verified' => 'boolean',
         ];
     }
 }

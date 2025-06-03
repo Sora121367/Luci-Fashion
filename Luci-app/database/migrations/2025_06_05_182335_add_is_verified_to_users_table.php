@@ -11,9 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('cart_items', function (Blueprint $table) {
-            $table->string('size',4);
-            $table->timestamps();
+        Schema::table('users', function (Blueprint $table) {
+            //
+              $table->boolean('is_verified')->default(false)->after('email_verified_at');
         });
     }
 
@@ -22,8 +22,9 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('cart_items', function (Blueprint $table) {
+        Schema::table('users', function (Blueprint $table) {
             //
+             $table->dropColumn('is_verified');
         });
     }
 };
