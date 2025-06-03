@@ -30,10 +30,10 @@ class AuthController extends Controller
                 'Firstname' => 'required',
                 'Lastname' => 'required',
                 'phonenumber' => 'required',
-                'city' => 'required',
+                'city' => 'nullable|string',
                 'email' => 'required|email|unique:users',
                 'password' => 'required|min:6|confirmed',
-                'gender' => 'required|string',
+                'gender' => 'nullable|string',
             ]);
 
             $verification_code = rand(100000, 999999); // Generate a 6-digit code
@@ -41,14 +41,15 @@ class AuthController extends Controller
             $user = User::create([
                 'Firstname' => $validated['Firstname'],
                 'Lastname' => $validated['Lastname'],
-                'phonenumber' => $validated['phonenumber'],
+                'phonenumber' => $validated['phonenumber'] ?? null,
                 'email' => $validated['email'],
                 'password' => Hash::make($validated['password']),
-                'city' => $validated['city'],
-                'role' => 'user', // Default role
-                'gender' => $validated['gender'],
+                'city' => $validated['city'] ?? null,
+                'role' => 'user',
+                'gender' => $validated['gender'] ?? null,
                 'verification_code' => $verification_code
             ]);
+
 
             // Send verification code via email
             Mail::to($user->email)->send(new VerifyEmail($verification_code));
@@ -151,32 +152,39 @@ class AuthController extends Controller
 
 
 
+
     public function verifyCode(Request $request)
     {
-        // Ensure the verification code is exactly 6 digits and numeric
+        // Validate the combined code
         $request->validate([
-            'code' => 'required|numeric|digits:6', // Validate as a 6-digit number
+            'code_combined' => 'required|numeric|digits:6',
         ]);
 
+        $code = $request->input('code_combined');
+
         // Find the user by the verification code
-        $user = User::where('verification_code', $request->code)->first();
+        $user = User::where('verification_code', $code)->first();
 
         if (!$user) {
-            return redirect()->back()->withErrors(['code' => 'Invalid verification code. Please try again.']);
+            return redirect()->back()->withErrors(['code_combined' => 'Invalid verification code. Please try again.']);
         }
 
-        // Check if the user is already verified
+        // Check if already verified
         if ($user->email_verified_at) {
-            return redirect('/')->with('success', 'Your email is already verified. You can log in.');
+            Auth::login($user); // Log them in
+            return redirect('/')->with('success', 'Your email is already verified. You are now logged in.');
         }
 
-        // Mark the user as verified
+        // Mark as verified
         $user->email_verified_at = now();
-        // $user->verification_code = null;
         $user->save();
 
-        return redirect('/')->with('success', 'Email verified successfully! You can now log in.');
+        // Log the user in
+        Auth::login($user);
+
+        return redirect('/')->with('success', 'Email verified successfully! You are now logged in.');
     }
+
 
 
 
@@ -193,10 +201,13 @@ class AuthController extends Controller
     public function verifyResetCode(Request $request)
     {
         $request->validate([
-            'code' => 'required|numeric|digits:6',
+             'code_combined' => 'required|numeric|digits:6',
         ]);
+       
+        $code = $request->input('code_combined');
 
-        $user = User::where('reset_code', $request->code)->first();
+
+        $user = User::where('reset_code', $code)->first();
 
         if (!$user) {
             return redirect()->back()->withErrors(['code' => 'Invalid or expired reset code.']);
@@ -206,6 +217,7 @@ class AuthController extends Controller
         $user->update([
             'reset_code' => null,
         ]);
+        
 
         return redirect()->route('Auth.createpassword', ['email' => $user->email])
             ->with('success', 'Code verified! Set your new password.');
@@ -271,6 +283,9 @@ class AuthController extends Controller
 
     public function displayVerifycode()
     {
+        if( Auth::check() && Auth::user()->email_verified_at ) {
+             return redirect('/')->with('success', 'You’re already verified and logged in.');
+        }
         return view('Email.verify');
     }
 
@@ -290,10 +305,14 @@ class AuthController extends Controller
     // Display verify code form
     public function displayVerifyResetCodeForm()
     {
+        
         return view('Auth.verifyCode');
     }
     public function displaycreatePassword()
-    {
+    {   
+        if( Auth::check() && Auth::user()->reset_code ==!null ) {
+            return redirect('/')->with('success','You’re already verified and logged in.');
+        }
         return view('Auth.createpassword');
     }
 
@@ -308,7 +327,7 @@ class AuthController extends Controller
             return redirect()->route('admin.dashboard');
         }
         if (Auth::guard('web')->check()) {
-            return redirect('/'); 
+            return redirect('/');
         }
 
 
@@ -317,8 +336,12 @@ class AuthController extends Controller
 
 
 
-    public function displayForgetPW()
-    {
-        return view('Auth.forgetpw');
+public function displayForgetPW()
+{ 
+    if (Auth::check()) {
+        return redirect('/')->with('info', 'You’re already verified and logged in.');
     }
+    return view('Auth.forgetpw');
+}
+
 }

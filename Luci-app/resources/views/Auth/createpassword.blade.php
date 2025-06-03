@@ -3,7 +3,7 @@
     <div class="flex items-center justify-center h-screen">
     <form action="{{ route('createPassword') }}" method="POST" class="bg-white p-6 rounded-lg w-[24rem]">
         @csrf
-    
+         
         <h2 class="text-lg font-semibold mb-4 text-center">Create new password</h2>
     
         <!-- Hidden input for email -->

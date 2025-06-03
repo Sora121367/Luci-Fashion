@@ -17,7 +17,7 @@ Route::post('/register', [AuthController::class, 'register'])->name('register.po
 
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
-Route::get('/forgetpassword', [AuthController::class, 'displayForgetPasswordForm'])->name('Auth.forgetpw');
+//Route::get('/forgetpassword', [AuthController::class, 'displayForgetPasswordForm'])->name('Auth.forgetpw');
 Route::post('/forgetpassword', [AuthController::class, 'forgetPassword'])->name('forgetpassword.post');
 
 Route::get('/verify-reset-code', [AuthController::class, 'displayVerifyResetCodeForm'])->name('password.verify');
@@ -27,10 +27,15 @@ Route::get('/create-password', [AuthController::class, 'displayCreatePassword'])
 Route::post('/create-password', [AuthController::class, 'createPassword'])->name('createPassword');
 
   Route::get('/verify', [AuthController::class, 'displayVerifycode'])->name('verify.show');
-    Route::post('/verify', [AuthController::class, 'verifyCode'])->name('verify.code');
+ Route::post('/verify', [AuthController::class, 'verifyCode'])->name('verify.code');
 
 // Logout Route
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+
+
+Route::get('/forgetpassword', [AuthController::class, 'displayForgetPW'])
+    ->middleware('guest')
+    ->name('password.request');
 
 
 
@@ -111,7 +116,8 @@ Route::get('/checkout',function(){
 
 
 Route::middleware(['web'])->group(function () {
-  
+
+  Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     
 });
 
@@ -146,6 +152,8 @@ Route::middleware(['admin'])->group(function () {
     Route::get('/logout', function () {
         return view('admin.logout');
     })->name('admin.logout');
+
+    
 });
 
 

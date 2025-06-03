@@ -1,6 +1,6 @@
 <x-layout>
-    <div class="flex p-6 items-center justify-center h-screen bg-gray-100">
-        <form class="bg-white p-6 rounded-lg shadow-md w-[24rem]" method="POST" action="{{ route('login.post') }}">
+    <div class="flex p-6 items-center justify-center h-screen">
+        <form class="bg-white p-6 rounded-lg shadow-md w-[30rem]" method="POST" action="{{ route('login.post') }}">
 
             @csrf
 
@@ -17,7 +17,7 @@
                 <div class="mb-3">
                     <label for="email" class="block text-sm text-gray-700">Email</label>
                     <input type="email" id="email" name="email" placeholder="Enter your email"
-                        class="w-full mt-1 p-2 border border-gray-300 rounded-md text-sm focus:ring focus:ring-gray-200"
+                        class="w-full mt-2 p-3 border border-gray-300 rounded-md text-sm focus:ring focus:ring-gray-200"
                         required autocomplete="email">
                     @if ($errors->has('email'))
                         <span class="text-red-500 text-sm">
@@ -26,18 +26,37 @@
                     @endif
                 </div>
 
-                <!-- Password Field -->
-                <div class="mb-3">
+                <!-- Password Field with toggle eye -->
+                <div class="mb-5" x-data="{ show: false }">
                     <label for="password" class="block text-sm text-gray-700">Password</label>
-                    <input type="password" id="password" name="password"
-                        class="w-full mt-1 p-2 border border-gray-300 rounded-md text-sm focus:ring focus:ring-gray-200"
-                        required autocomplete="current-password">
+                    <div class="relative">
+                        <input :type="show ? 'text' : 'password'" id="password" name="password"
+                            class="w-full mt-1 p-3 border border-gray-300 rounded-md text-sm focus:ring focus:ring-gray-200 pr-10"
+                            required autocomplete="current-password">
+                        <button type="button" @click="show = !show"
+                            class="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-500 focus:outline-none">
+                            <svg x-show="!show" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                            <svg x-show="show" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7a9.985 9.985 0 012.442-3.61m2.572-2.112A9.985 9.985 0 0112 5c4.477 0 8.267 2.943 9.542 7a9.99 9.99 0 01-4.134 5.162M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3l18 18" />
+                            </svg>
+                        </button>
+                    </div>
                     @if ($errors->has('password'))
                         <span class="text-red-500 text-sm">
                             {{ $errors->first('password') }}
                         </span>
                     @endif
                 </div>
+
             </div>
 
             <!-- Login Button -->
