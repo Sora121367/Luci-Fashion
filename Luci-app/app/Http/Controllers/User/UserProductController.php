@@ -4,7 +4,9 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use App\Models\Product;
+use App\Models\Category;
 use Illuminate\Http\Request;
+
 class UserProductController extends Controller
 {
     /**
@@ -14,7 +16,7 @@ class UserProductController extends Controller
     {
         $products = Product::all();
         // dd($products);
-        return view('User.user-home',["products" => $products]);
+        return view('User.user-home', ["products" => $products]);
     }
 
     /**
@@ -38,20 +40,16 @@ class UserProductController extends Controller
      */
     public function show(string $id)
     {
-        $products = Product::all();
-    
-        $product = null;
-        foreach ($products as $item) {
-            if ($item['id'] == $id) {
-                $product = $item;
-                break;
-            }
-        }
-    
-        if (!$product) {
-            abort(404, "Product not found");
-        }
-        return view('User.showproduct', compact('product'));
+        // Find the product by ID or fail if not found
+        $product = Product::findOrFail($id);
+
+        // Get related products with the same category, excluding the current product
+        $relatedProducts = Product::with('category')
+            ->where('id', '!=', $id)
+            ->where('category_id', $product->category_id) // Assuming you want related by category
+            ->get();
+
+        return view('User.showproduct', compact('product', 'relatedProducts'));
     }
 
     /**
@@ -76,5 +74,25 @@ class UserProductController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+    public function menProducts()
+    {
+        $mainCategory = Category::where('name', 'Mens')->firstOrFail();
+
+        // Eager load each sub-category's products
+        $subCategories = $mainCategory->children()->with('products')->get();
+        $totalProducts = $subCategories->sum(fn($cat) => $cat->products->count());
+
+        return view('User.men-products', compact('subCategories','totalProducts'));
+    }
+
+    public function womenProducts()
+    {
+        $mainCategory = Category::where('name', 'Women')->firstOrFail();
+
+        // Eager load each sub-category's products
+        $subCategories = $mainCategory->children()->with('products')->get();
+        $totalProducts = $subCategories->sum(fn($cat) => $cat->products->count());
+        return view('User.women-products', compact('subCategories','totalProducts'));
     }
 }

@@ -22,10 +22,18 @@ class Category extends Model
             }
         });
     }
-    // This allows a sub-category to access its main category
     public function parent()
     {
         return $this->belongsTo(Category::class, 'parent_id');
     }
 
+    public function children()
+    {
+        return $this->hasMany(Category::class, 'parent_id');
+    }
+
+    public function products()
+    {
+        return $this->hasMany(Product::class);
+    }
 }

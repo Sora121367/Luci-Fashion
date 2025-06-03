@@ -2,7 +2,12 @@
 use App\Http\Controllers\Auth\AuthController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\admin\ProductController;
+use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\FavoriteProductController;
 use App\Http\Controllers\User\UserProductController;
+use App\Models\FavoriteProduct;
+
+
 // Home Page
 // Route::get('/', function () {
 //     return view('home');
@@ -42,47 +47,18 @@ Route::get('/forgetpassword', [AuthController::class, 'displayForgetPW'])
 
 
 // User Route
-Route::get('/', [UserProductController::class, 'index']);
+Route::get('/', [UserProductController::class, 'index'])->name("home");
 
 
 Route::get('/show-product/{id}',[UserProductController::class,'show']);
 
-Route::get('/men-products',function(){
-    $products =[
-        ["src"=>"product-images/men-clothing.jpg","price"=>"$19.99","info"=>"Gangstar Outfit","id" => "1"],
-        ["src"=>"product-images/men-pants.jpg","price"=>"$20.59","info"=>"Casual Round Neck","id" => "2"],
-        ["src"=>"product-images/men-shirts.jpg","price"=>"$25.42","info"=>"Bside with a gang","id" => "3"],
-        ["src" => "product-images/product-1.jpg", "price" => "$19.99", "info" => "Gangstar Outfit", "id" => "4"],
-    ];
-    return view('User.men-products',["products"=>$products]);
-});
+Route::get('/men-products',[UserProductController::class,'menProducts']);
 
-Route::get('/women-products',function(){
-    $products =[
-        ["src"=>"product-images/women-1.jpg","price"=>"$19.99","info"=>"Gangstar Outfit","id" => "1"],
-        ["src"=>"product-images/women-2.jpg","price"=>"$20.59","info"=>"Casual Round Neck","id" => "2"],
-        ["src"=>"product-images/women-3.jpg","price"=>"$25.42","info"=>"Bside with a gang","id" => "3"],
-    ];
-    return view('User.women-products',["products"=>$products]);
-});
+Route::get('/women-products',[UserProductController::class,'womenProducts']);
 
-Route::get('/user-favorite',function(){
-    $products =[
-        ["src"=>"product-images/product-1.jpg","price"=>"$19.99","info"=>"Gangstar Outfit","id" => "1"],
-        ["src"=>"product-images/product-2.jpg","price"=>"$20.59","info"=>"Casual Round Neck","id" => "2"],
-        ["src"=>"product-images/product-3.jpg","price"=>"$25.42","info"=>"Bside with a gang","id" => "3"],
-    ];
-    return view('User.user-favorite',["products"=>$products]);
-});
+Route::get('/user-favorite',[FavoriteProductController::class,'index']);
 
-Route::get('/checkout',function(){
-    $products =[
-        ["src"=>"product-images/product-1.jpg","price"=>"$19.99","info"=>"Gangstar Outfit","id" => "1"],
-        ["src"=>"product-images/product-2.jpg","price"=>"$20.59","info"=>"Casual Round Neck","id" => "2"],
-        ["src"=>"product-images/product-3.jpg","price"=>"$25.42","info"=>"Bside with a gang","id" => "3"],
-    ];
-    return view('User.checkout',["products"=>$products]);
-});
+Route::get('/checkout',[CheckoutController::class,'index']);
 
 //admin
 // Route::get('/dashboard', function () {

@@ -1,18 +1,20 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Luci-Fashion</title>
-    @vite(['resources/css/app.css']) {{-- Make sure this is included --}}
-    @livewireStyles
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Luci-Fashion</title>
+  @vite(['resources/css/app.css']) {{-- Make sure this is included --}}
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+
+  @livewireStyles
 
 </head>
 
 <body>
     <nav class="fixed w-full shadow-md flex justify-between items-center py-4 px-16  z-50 bg-white ">
         <ul class="flex space-x-4 text-black text-xl">
-            <a href="/home-user">
+            <a href="/">
                 <li class="hover:text-gray-500">HOME</li>
             </a>
             <a href="/men-products">
@@ -21,7 +23,7 @@
             <a href="/women-products">
                 <li class="hover:text-gray-500">WOMEN</li>
             </a>
-            <a href="/home-user">
+            <a href="/">
                 <li class="hover:text-gray-500">CONTACT US</li>
             </a>
         </ul>
