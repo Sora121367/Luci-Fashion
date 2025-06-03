@@ -10,7 +10,7 @@
 </head>
 
 <body>
-    <nav class="flex justify-between p-4 mx-28">
+    <nav class="fixed w-full shadow-md flex justify-between items-center py-4 px-16  z-50 bg-white ">
         <ul class="flex space-x-4 text-black text-xl">
             <a href="/home-user">
                 <li class="hover:text-gray-500">HOME</li>
@@ -75,10 +75,11 @@
             </ul>
         </div>
     </nav>
-    <main>
+    <main class="relative pt-20">
         {{ $slot }}
+        
     </main>
-    <footer class="bg-black text-white">
+    <footer class="bg-black text-white ">
         <div class="flex gap-10 py-10 px-20 justify-between">
             <div class="flex flex-col gap-2">
                 <h3>FOLLOW US</h3>
