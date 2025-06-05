@@ -17,43 +17,80 @@
         @include('layouts.sidebar')
 
         <!-- Page Content -->
-        <main class="flex-1 p-6 flex gap-6">
-            <!-- Categories Section -->
-            <div class="border border-gray-400 bg-white p-6 rounded-lg shadow-md w-full">
-                <div class="flex justify-between items-center">
-                    <h2 class="text-2xl font-semibold">Category List</h2>
-                    <a href="{{ url('newcategory') }}" class="bg-black text-white px-4 py-2 rounded-md hover:bg-gray-700">+ Add New Category</a>
-                </div>
-                
-                <table class="table-auto w-full mt-4 border-collapse border border-gray-300">
-                    <thead>
-                        <tr class="bg-gray-100 text-gray-700 border-b">
-                            <th class="px-4 py-2 text-left">Main Category</th>
-                            <th class="px-4 py-2 text-left">Sub-Category</th>
-                            <th class="px-4 py-2 text-center">Action</th>
+        <main class="flex-1 p-6 space-y-8">
+
+            <!-- Header -->
+            <div class="flex justify-between items-center">
+                <h2 class="text-2xl font-semibold">Category List</h2>
+                <a href="{{ url('newcategory') }}" class="bg-black text-white px-4 py-2 rounded-md hover:bg-gray-700">+ Add New Category</a>
+            </div>
+
+            <!-- Main Categories Section -->
+            <div class="bg-white p-6 rounded-xl shadow max-w-2xl mx-auto">
+                <h3 class="text-xl font-semibold mb-4">Main Categories List</h3>
+                <table class="table-auto w-full border-collapse border border-gray-300">
+                    <thead class="bg-gray-100 text-gray-700">
+                        <tr>
+                            <th class="px-4 py-2 text-left">Name</th>
+                            <th class="px-4 py-2 text-right">Action</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($categories as $category)
-                            <tr class="border-b">
+                        @forelse($mainCategories as $category)
+                            <tr class="border-b hover:bg-gray-50">
                                 <td class="px-4 py-2">{{ $category->name }}</td>
-                                <td class="px-4 py-2">{{ $category->parent_id }}</td>
-                                <td class="px-4 py-2 text-center space-x-2">
-                                    <a href="{{ url('editcategory/'.$category->id) }}" class="text-blue-500"><i class="bi bi-pencil cursor-pointer"></i></a>
-
-                                    <form action="{{ url('deletecategory/'.$category->id) }}" method="POST" style="display:inline;">
+                                <td class="px-4 py-2 text-right space-x-2">
+                                    <a href="{{ url('editcategory/' . $category->id) }}" class="text-blue-500"><i class="bi bi-pencil"></i></a>
+                                    <form action="{{ url('deletecategory/' . $category->id) }}" method="POST" class="inline-block">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" onclick="return confirm('Are you sure you want to delete this category?')" class="text-black">
-                                            <i class="bi bi-trash cursor-pointer"></i>
-                                        </button>
+                                        <button onclick="return confirm('Are you sure?')" class="text-red-500"><i class="bi bi-trash"></i></button>
                                     </form>
                                 </td>
                             </tr>
-                        @endforeach
+                        @empty
+                            <tr>
+                                <td colspan="2" class="px-4 py-2 text-center text-gray-500">No main categories found.</td>
+                            </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>
+
+            <!-- Sub Categories Section -->
+            <div class="bg-white p-6 rounded-xl shadow max-w-2xl mx-auto">
+                <!-- <h3 class="text-xl font-semibold mb-4">Sub-Categories</h3> -->
+                <table class="table-auto w-full border-collapse border border-gray-300">
+                    <thead class="bg-gray-100 text-gray-700">
+                        <tr>
+                            <th class="px-4 py-2 text-left">Sub Category</th>
+                            <th class="px-4 py-2 text-left">Main Category</th>
+                            <th class="px-4 py-2 text-right">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($subCategories as $category)
+                            <tr class="border-b hover:bg-gray-50">
+                                <td class="px-4 py-2">{{ $category->name }}</td>
+                                <td class="px-4 py-2">{{ $category->parent->name ?? 'N/A' }}</td>
+                                <td class="px-4 py-2 text-right space-x-2">
+                                    <a href="{{ url('editcategory/' . $category->id) }}" class="text-blue-500"><i class="bi bi-pencil"></i></a>
+                                    <form action="{{ url('deletecategory/' . $category->id) }}" method="POST" class="inline-block">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button onclick="return confirm('Are you sure?')" class="text-red-500"><i class="bi bi-trash"></i></button>
+                                    </form>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="3" class="px-4 py-2 text-center text-gray-500">No sub-categories found.</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+
         </main>
     </div>
 

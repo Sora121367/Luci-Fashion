@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 use App\Models\User;
+use App\Models\Admin;
+
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use Exception;
@@ -78,30 +80,41 @@ class AuthController extends Controller
 
 
     public function login(Request $request)
-    {
-        $credentials = $request->only('email', 'password');
+{
+    $credentials = $request->only('email', 'password');
 
-        // if (Auth::check()) {
-        //     return redirect('home');
-        // }
+    // First check if admin exists by email in admins table
+    $admin = Admin::where('email', $request->email)->first();
 
-        $user = User::where('email', $request->email)->first();
-
-        if(!$user->is_verified) {
-            return back()->withErrors(['email' => 'Invalid credentials.']);
+    if ($admin) {
+        if (!$admin->is_verified) {
+            return back()->withErrors(['email' => 'Please verify your admin account first.']);
         }
-        // Check if it's an admin login
+
         if (Auth::guard('admin')->attempt($credentials)) {
             return redirect()->route('admin.dashboard');
         }
 
-        // Check if it's a user login
-        if (Auth::guard('web')->attempt($credentials)) {
-            return redirect('/');
-        }
+        return back()->withErrors(['email' => 'Invalid admin credentials.']);
+    }
 
+    // Else check regular users
+    $user = User::where('email', $request->email)->first();
+
+    if (!$user) {
         return back()->withErrors(['email' => 'Invalid credentials.']);
     }
+
+    if (!$user->is_verified) {
+        return back()->withErrors(['email' => 'Please verify your email first.']);
+    }
+
+    if (Auth::guard('web')->attempt($credentials)) {
+        return redirect('/');
+    }
+
+    return back()->withErrors(['email' => 'Invalid credentials.']);
+}
 
 
     public function logout(Request $request)

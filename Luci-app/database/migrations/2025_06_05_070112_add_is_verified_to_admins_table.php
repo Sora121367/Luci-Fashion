@@ -9,22 +9,21 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
-    {
-        Schema::table('users', function (Blueprint $table) {
-            //
-              $table->boolean('is_verified')->default(false)->after('email_verified_at');
-        });
-    }
+   public function up()
+{
+    Schema::table('admins', function (Blueprint $table) {
+        $table->boolean('is_verified')->default(false)->after('password');
+    });
+}
+
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::table('users', function (Blueprint $table) {
+        Schema::table('admins', function (Blueprint $table) {
             //
-             $table->dropColumn('is_verified');
         });
     }
 };
