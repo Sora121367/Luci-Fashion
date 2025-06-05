@@ -80,17 +80,13 @@
                     <div class="mb-4">
                         <label class="block font-medium">Product Image:</label>
                         <input type="file" name="image" id="productImage" class="border border-gray-400 w-full px-3 py-2 rounded-md" onchange="previewImage(event)">
+                        
+                        <!-- Image Preview -->
+                        <div id="imagePreviewContainer" class="mt-4">
+                            <img id="imagePreview" src="#" alt="Image Preview" class="hidden w-48 h-48 object-cover rounded border" />
+                        </div>
                     </div>
 
-                    <!-- Status -->
-                    {{-- <div class="mb-4">
-                        <label class="block font-medium">Status:</label>
-                        <div>
-                            <label><input type="radio" name="status" value="active"> Active</label>
-                            <label><input type="radio" name="status" value="inactive"> Inactive</label>
-                        </div>
-                    </div> --}}
-            
                     <!-- Submit Button -->
                     <button type="submit" class="bg-black text-white px-4 py-2 rounded-md hover:bg-gray-700">Save Product</button>
                 </form>
@@ -98,15 +94,15 @@
         </main>
     </div>
 
-    <!-- JavaScript to filter sub-categories based on main category -->
+    <!-- JavaScript -->
     <script>
+        // Handle sub-category filtering
         const mainCategory = document.getElementById('mainCategory');
         const subCategory = document.getElementById('subCategory');
         const originalOptions = Array.from(subCategory.options);
 
         mainCategory.addEventListener('change', () => {
             const selectedMain = mainCategory.value;
-
             subCategory.innerHTML = '<option value="">Select Sub-Category</option>';
 
             originalOptions.forEach(option => {
@@ -115,6 +111,21 @@
                 }
             });
         });
+
+        // Image preview
+        function previewImage(event) {
+            const reader = new FileReader();
+            const imagePreview = document.getElementById('imagePreview');
+
+            reader.onload = function () {
+                imagePreview.src = reader.result;
+                imagePreview.classList.remove('hidden');
+            };
+
+            if (event.target.files[0]) {
+                reader.readAsDataURL(event.target.files[0]);
+            }
+        }
     </script>
 </body>
 </html>
