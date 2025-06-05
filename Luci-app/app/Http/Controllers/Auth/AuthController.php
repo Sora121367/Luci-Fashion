@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use Laravel\Sanctum\HasApiTokens;
 use App\Http\Controllers\Controller;
+use App\Jobs\SendMailJob;
 use App\Mail\ResetPasswordMail;
 use App\Mail\VerifyEmail;
 use Illuminate\Http\Request;
@@ -34,6 +35,7 @@ class AuthController extends Controller
                 'email' => 'required|email|unique:users',
                 'password' => 'required|min:6|confirmed',
                 'gender' => 'nullable|string',
+                'is_verified' => 'nullable|boolean',
             ]);
 
             $verification_code = rand(100000, 999999); // Generate a 6-digit code
@@ -47,12 +49,17 @@ class AuthController extends Controller
                 'city' => $validated['city'] ?? null,
                 'role' => 'user',
                 'gender' => $validated['gender'] ?? null,
-                'verification_code' => $verification_code
-            ]);
+               
+                'verification_code' => $verification_code,
+                'is_verified' => $validated['is_verified'] ?? false,
+            ]); 
 
 
             // Send verification code via email
-            Mail::to($user->email)->send(new VerifyEmail($verification_code));
+          //  Mail::to($user->email)->send(new VerifyEmail($verification_code));
+
+            // Dispatch verification email via queued job
+            SendMailJob::dispatch($user, $verification_code,"verify");
 
             // Redirect to verification page with email
             return redirect()->route('verify.code')->with([
@@ -72,8 +79,14 @@ class AuthController extends Controller
     {
         $credentials = $request->only('email', 'password');
 
-        if (Auth::check()) {
-            return redirect('home');
+        // if (Auth::check()) {
+        //     return redirect('home');
+        // }
+
+        $user = User::where('email', $request->email)->first();
+
+        if(!$user->is_verified) {
+            return back()->withErrors(['email' => 'Invalid credentials.']);
         }
         // Check if it's an admin login
         if (Auth::guard('admin')->attempt($credentials)) {
@@ -177,6 +190,7 @@ class AuthController extends Controller
 
         // Mark as verified
         $user->email_verified_at = now();
+        $user->is_verified = true;  
         $user->save();
 
         // Log the user in
@@ -269,9 +283,10 @@ class AuthController extends Controller
         $reset_code = rand(100000, 999999);
         $user->reset_code = $reset_code;
         $user->save();
+       
 
-        Mail::to($user->email)->send(new ResetPasswordMail($reset_code));
-
+        // Use Job for forget password
+       SendMailJob::dispatch($user, $reset_code,"reset");
         return redirect()->route('password.verify')->with([
             'success' => 'A password reset code has been sent to your email.',
             'email' => $user->email
@@ -310,7 +325,7 @@ class AuthController extends Controller
     }
     public function displaycreatePassword()
     {   
-        if( Auth::check() && Auth::user()->reset_code ==!null ) {
+        if( Auth::check() && Auth::user()->reset_code == null ) {
             return redirect('/')->with('success','You’re already verified and logged in.');
         }
         return view('Auth.createpassword');
