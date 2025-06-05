@@ -10,8 +10,8 @@ use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    
- protected $guard = 'web';
+
+    protected $guard = 'web';
     /**
      * The attributes that are mass assignable.
      *

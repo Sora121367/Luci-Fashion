@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\admin\ProductController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\FavoriteProductController;
+use App\Http\Controllers\FeedbackController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\User\UserProductController;
 use App\Models\FavoriteProduct;
 
@@ -50,6 +52,10 @@ Route::get('/forgetpassword', [AuthController::class, 'displayForgetPW'])
 Route::get('/', [UserProductController::class, 'index'])->name("home");
 
 
+Route::get('/contact-us', [FeedbackController::class, 'index'])->name("contact-us");
+Route::post('/report-submit',[FeedbackController::class,'store'] )->name("report-submit");
+
+
 Route::get('/show-product/{id}',[UserProductController::class,'show']);
 
 Route::get('/men-products',[UserProductController::class,'menProducts']);
@@ -59,6 +65,7 @@ Route::get('/women-products',[UserProductController::class,'womenProducts']);
 Route::get('/user-favorite',[FavoriteProductController::class,'index']);
 
 Route::get('/checkout',[CheckoutController::class,'index']);
+Route::get('/view-order-history',[OrderController::class,'index'] )->name("order-history");
 
 //admin
 // Route::get('/dashboard', function () {

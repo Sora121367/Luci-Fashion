@@ -9,6 +9,7 @@ use App\Mail\ResetPasswordMail;
 use App\Mail\VerifyEmail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
@@ -60,6 +61,7 @@ class AuthController extends Controller
 
             // Dispatch verification email via queued job
             SendMailJob::dispatch($user, $verification_code,"verify");
+            Log::info('Verification email job dispatched');
 
             // Redirect to verification page with email
             return redirect()->route('verify.code')->with([

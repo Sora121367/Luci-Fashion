@@ -23,7 +23,7 @@
             <a href="/women-products">
                 <li class="hover:text-gray-500">WOMEN</li>
             </a>
-            <a href="/">
+            <a href="/contact-us">
                 <li class="hover:text-gray-500">CONTACT US</li>
             </a>
         </ul>
@@ -62,6 +62,9 @@
                             <h2 class="text-2xl font-bold mb-4">Profile</h2>
                             <p class="text-gray-700 mb-2">Name: {{ Auth::user()->Lastname }}</p>
                             <p class="text-gray-700 mb-4">Email: {{ Auth::user()->email }}</p>
+                            <a href="/view-order-history" class="text-gray-700 mb-4">
+                                <p class="text-gray-700 mb-4 underline">View Order History</p>
+                            </a>
 
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
