@@ -1,4 +1,5 @@
 <?php
+
 use App\Http\Controllers\Auth\AuthController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\admin\ProductController;
@@ -9,9 +10,12 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\User\UserProductController;
 use App\Models\FavoriteProduct;
 use App\Http\Controllers\admin\CategoryController;
+use App\Http\Controllers\admin\NotificationController;
 use App\Models\Category;
-
-
+use App\Models\Order;
+use App\Models\User;
+use Illuminate\Support\Facades\Mail;
+use App\Notifications\OrderCompleted;
 
 
 // Home Page
@@ -37,8 +41,8 @@ Route::post('/verify-reset-code', [AuthController::class, 'verifyResetCode'])->n
 Route::get('/create-password', [AuthController::class, 'displayCreatePassword'])->name('Auth.createpassword');
 Route::post('/create-password', [AuthController::class, 'createPassword'])->name('createPassword');
 
-  Route::get('/verify', [AuthController::class, 'displayVerifycode'])->name('verify.show');
- Route::post('/verify', [AuthController::class, 'verifyCode'])->name('verify.code');
+Route::get('/verify', [AuthController::class, 'displayVerifycode'])->name('verify.show');
+Route::post('/verify', [AuthController::class, 'verifyCode'])->name('verify.code');
 
 // Logout Route
 
@@ -56,20 +60,20 @@ Route::get('/forgetpassword', [AuthController::class, 'displayForgetPW'])
 Route::get('/', [UserProductController::class, 'index'])->name("home");
 
 
-Route::get('/contact-us', [FeedbackController::class, 'index'])->name("contact-us");
-Route::post('/report-submit',[FeedbackController::class,'store'] )->name("report-submit");
+//Route::get('/contact-us', [FeedbackController::class, 'index'])->name("contact-us");
+Route::post('/report-submit', [FeedbackController::class, 'store'])->name("report-submit");
 
 
-Route::get('/show-product/{id}',[UserProductController::class,'show']);
+Route::get('/show-product/{id}', [UserProductController::class, 'show']);
 
-Route::get('/men-products',[UserProductController::class,'menProducts']);
+Route::get('/men-products', [UserProductController::class, 'menProducts']);
 
-Route::get('/women-products',[UserProductController::class,'womenProducts']);
+Route::get('/women-products', [UserProductController::class, 'womenProducts']);
 
-Route::get('/user-favorite',[FavoriteProductController::class,'index']);
+Route::get('/user-favorite', [FavoriteProductController::class, 'index']);
 
-Route::get('/checkout',[CheckoutController::class,'index']);
-Route::get('/view-order-history',[OrderController::class,'index'] )->name("order-history");
+Route::get('/checkout', [CheckoutController::class, 'index']);
+Route::get('/view-order-history', [OrderController::class, 'index'])->name("order-history");
 
 //admin
 // Route::get('/dashboard', function () {
@@ -102,19 +106,26 @@ Route::get('/view-order-history',[OrderController::class,'index'] )->name("order
 */
 
 
+Route::get('/orders/{id}', function ($id) {
+    $order = Order::findOrFail($id); // find the order from DB
+
+    return view('orders.invoice', compact('order')); // return invoice view
+});
+
+
 Route::middleware(['web'])->group(function () {
 
-  Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-    
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+    Route::get('/contact-us', [FeedbackController::class, 'index'])->name("contact-us");
 });
 
 
 //Admin route
-Route::middleware(['admin'])->group(function(){
+Route::middleware(['admin'])->group(function () {
 
-   Route::get('/dashboard', function () {
-    return view('admin.dashboard');
-})->name('admin.dashboard');
+    Route::get('/dashboard', function () {
+        return view('admin.dashboard');
+    })->name('admin.dashboard');
 
     Route::get('/customers', function () {
         return view('admin.customers');
@@ -139,9 +150,12 @@ Route::middleware(['admin'])->group(function(){
     Route::get('/logout', function () {
         return view('admin.logout');
     })->name('admin.logout');
-
+   
 });
 
+ Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllRead'])
+    ->name('notifications.markAllRead')
+    ->middleware('auth:admin');
 
 // admin route 
 Route::get('/productlist', [ProductController::class, 'index'])->name('admin.productlist');
@@ -169,7 +183,7 @@ Route::get('/newproducts', function () {
 
 
 Route::post('savecategory', [CategoryController::class, 'store'])->name('admin.savecategory');
-Route::get('/categorylist', [CategoryController::class, 'index'])->name('admin.categorylist'); 
+Route::get('/categorylist', [CategoryController::class, 'index'])->name('admin.categorylist');
 Route::get('/categories', [CategoryController::class, 'create'])->name('admin.categories');
 // Route::post('/savecategory', [CategoryController::class, 'store']);
 
@@ -182,5 +196,3 @@ Route::post('saveproduct', [ProductController::class, 'store']);
 Route::delete('/productlist/{id}', [ProductController::class, 'destroy'])->name('admin.destroy');
 Route::get('editproducts/{id}', [ProductController::class, 'edit']);
 Route::post('updateproducts/{id}', [ProductController::class, 'update']);
-
-

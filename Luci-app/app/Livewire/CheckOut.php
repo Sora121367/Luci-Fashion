@@ -2,8 +2,10 @@
 
 namespace App\Livewire;
 
+use App\Notifications\OrderCompleted;
 use Livewire\Component;
 use App\Models\Order;
+use App\Models\User;
 use App\Models\OrderItem;
 use App\Models\Cart;
 use Illuminate\Support\Facades\Session;
@@ -46,7 +48,8 @@ class CheckOut extends Component
                 'id' => (string) Str::uuid(),
                 'total_price' => $this->totalWithDelivery,
                 'payment_method' => 'Cash',
-                'user_id' => Auth::id(), 
+                'status' => 'Pending',
+                'user_id' => Auth::id(),
             ]
         );
 
@@ -58,16 +61,33 @@ class CheckOut extends Component
                 'order_id' => $order->id,
                 'products_id' => $product['id'],
                 'size' => $product['size'],
+                'status' => 'Pending',
                 'quantity' => $product['quantity'],
                 'price' => $product['price'],
             ]);
         }
+
+
+
+        // Notify user if order is completed
+        if ($order->status == 'Pending') {
+            /** @var \App\Models\User $user */
+            $user = Auth::user();
+            $user->notify(new OrderCompleted($order));
+            $admins = \App\Models\Admin::all();
+
+            foreach ($admins as $admin) {
+                $admin->notify(new OrderCompleted($order));
+            }
+        }
+
+
         // 🧹 Clear the cart after successful checkout
         $this->clearCart();
 
         // Optional: redirect or show success message
         session()->flash('success', 'Order placed successfully!');
-        return redirect()->route('home'); 
+        return redirect()->route('home');
     }
 
     private function clearCart()

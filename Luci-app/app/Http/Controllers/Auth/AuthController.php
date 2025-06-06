@@ -7,13 +7,11 @@ use App\Http\Controllers\Controller;
 use App\Jobs\SendMailJob;
 use App\Mail\ResetPasswordMail;
 use App\Mail\VerifyEmail;
+use App\Models\Admin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
-
 use App\Models\User;
-use App\Models\Admin;
-
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use Exception;
@@ -34,10 +32,9 @@ class AuthController extends Controller
                 'Firstname' => 'required',
                 'Lastname' => 'required',
                 'phonenumber' => 'required',
-                'city' => 'nullable|string',
                 'email' => 'required|email|unique:users',
                 'password' => 'required|min:6|confirmed',
-                'gender' => 'nullable|string',
+
                 'is_verified' => 'nullable|boolean',
             ]);
 
@@ -49,14 +46,12 @@ class AuthController extends Controller
                 'phonenumber' => $validated['phonenumber'] ?? null,
                 'email' => $validated['email'],
                 'password' => Hash::make($validated['password']),
-                'city' => $validated['city'] ?? null,
                 'role' => 'user',
-                'gender' => $validated['gender'] ?? null,
-               
                 'verification_code' => $verification_code,
                 'is_verified' => $validated['is_verified'] ?? false,
             ]); 
 
+            
 
             // Send verification code via email
           //  Mail::to($user->email)->send(new VerifyEmail($verification_code));
