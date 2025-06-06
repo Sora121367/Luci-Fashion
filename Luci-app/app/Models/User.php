@@ -10,7 +10,7 @@ use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-
+    use HasFactory, Notifiable;
     protected $guard = 'web';
     /**
      * The attributes that are mass assignable.
@@ -28,8 +28,15 @@ class User extends Authenticatable
         'reset_code',
         'gender',
         'google_id',
+        'role',
         'is_verified',
     ];
+
+    public function getNameAttribute()
+{
+    return trim("{$this->Firstname} {$this->Lastname}");
+}
+
 
     /**
      * The attributes that should be hidden for serialization.
@@ -45,11 +52,8 @@ class User extends Authenticatable
      *
      * @return array<string, string>
      */
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'is_verified' => 'boolean',
-        ];
-    }
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'is_verified' => 'boolean',
+    ];
 }
