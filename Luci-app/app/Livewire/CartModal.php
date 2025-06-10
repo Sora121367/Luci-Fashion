@@ -81,7 +81,7 @@ class CartModal extends Component
             ['session_id' => session()->getId()],
             [
                 'id' => (string) Str::uuid(),
-                'user_id' => Auth::id(), // Uncomment if using auth
+                'user_id' => Auth::id(), 
             ]
         );
 
