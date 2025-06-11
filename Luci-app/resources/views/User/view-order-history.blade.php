@@ -45,7 +45,7 @@
                     <div class="px-6 py-6 border-b border-gray-200">
                         <div class="flex items-start space-x-4">
                             <div class="flex-shrink-0">
-                                <img src="{{$item->product->image_path}}"
+                                <img src="{{ asset('storage/' . $item->product->image_path) }}"
                                     alt="Micro Backpack" class="w-20 h-20 rounded-lg object-cover">
                             </div>
                             <div class="flex-1 min-w-0">

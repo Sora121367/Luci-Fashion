@@ -6,7 +6,7 @@
                     @php $product = $favorite->product; @endphp
 
                     @if ($product)
-                        <x-favorite-card src="{{ $product->image_path }}" :price="$product->price" :info="$product->name"
+                        <x-favorite-card src="{{ asset('storage/' . $product->image_path) }}" :price="$product->price" :info="$product->name"
                             :id="$product->id" />
                     @endif
                 @endforeach
