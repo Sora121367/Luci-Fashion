@@ -16,9 +16,10 @@ class FeedbackController extends Controller
         $completedOrdersCount = Order::where('user_id', $user->id)
             ->where('status', 'Completed')
             ->count();
+        $ordersCount = Order::where('user_id', $user->id)->count();
         // dd($completedOrdersCount);
 
-        if ($completedOrdersCount < 1) {
+        if ($ordersCount < 1 && $completedOrdersCount < 1) {
             return view('User.no-access-report');
         }
 
