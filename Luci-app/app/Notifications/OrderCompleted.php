@@ -2,6 +2,8 @@
 
 namespace App\Notifications;
 
+use App\Events\AdminNotification;
+use App\Models\Order;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Notification;
@@ -49,16 +51,18 @@ class OrderCompleted extends Notification implements ShouldQueue
     /**
      * Store in database.
      */
-    public function toDatabase(object $notifiable): array
-    {
-        $user = $this->order->user;
+   public function toDatabase(object $notifiable): array
+{
+    $order = $this->order;
+    $user = $order->user;
 
-        return [
-            'order_id' => $this->order->id,
-            'Firstname' => $user->Firstname ?? 'A user',
-            'message' => 'New order placed by ' . ($this->order->user->name ?? 'a user'
-            ),
-            'total_price' => $this->order->total_price,
-        ];
-    }
+
+    return [
+        'order_id' => $order->id,
+        'Firstname' => $user->Firstname ?? 'A user',
+        'message' => 'New order placed by ' . ($user->name ?? 'a user'),
+        'total_price' => $order->total_price,
+    ];
+}
+
 }

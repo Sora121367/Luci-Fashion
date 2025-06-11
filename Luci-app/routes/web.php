@@ -1,6 +1,8 @@
 <?php
 
+use App\Events\AdminNotification;
 use App\Http\Controllers\Auth\AuthController;
+use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\admin\ProductController;
 use App\Http\Controllers\CheckoutController;
@@ -113,12 +115,15 @@ Route::get('/orders/{id}', function ($id) {
 });
 
 
-Route::middleware(['web'])->group(function () {
+Route::middleware(['auth'])->group(function () {
+
 
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('/contact-us', [FeedbackController::class, 'index'])->name("contact-us");
-});
 
+    Route::get('/checkout', [CheckoutController::class, 'index']);
+    Route::get('/view-order-history', [OrderController::class, 'index'])->name("order-history");
+});
 
 //Admin route
 Route::middleware(['admin'])->group(function () {
@@ -150,49 +155,55 @@ Route::middleware(['admin'])->group(function () {
     Route::get('/logout', function () {
         return view('admin.logout');
     })->name('admin.logout');
-   
+    Route::get('/categorylist', [CategoryController::class, 'index'])->name('admin.categorylist');
+    Route::get('/categories', [CategoryController::class, 'create'])->name('admin.categories');
+    // Route::post('/savecategory', [CategoryController::class, 'store']);
+
+    Route::get('editcategory/{id}', [CategoryController::class, 'edit']);
+
+    // admin route 
+    Route::get('/productlist', [ProductController::class, 'index'])->name('admin.productlist');
+    Route::get('/newproducts', function () {
+        return view('admin.newproducts');
+    });
+    //NewCategory 
+    Route::get('/newcategory', function () {
+        return view('admin.newcategory');
+    });
+
+    Route::get('/newcategory', function () {
+        // Pass categories to the view so parent options can be selected
+        $categories = Category::all();
+        return view('admin.newcategory', compact('categories'));
+    });
+
+    Route::get('editproducts/{id}', [ProductController::class, 'edit']);
+
+    Route::get('/newproducts', function () {
+        // Fetch categories where parent_id is null for main categories and others for subcategories
+        $mainCategories = Category::whereNull('parent_id')->get();
+        $subCategories = Category::whereNotNull('parent_id')->get();
+        return view('admin.newproducts', compact('mainCategories', 'subCategories'));
+    });
 });
 
- Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllRead'])
+Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllRead'])
     ->name('notifications.markAllRead')
     ->middleware('auth:admin');
 
-// admin route 
-Route::get('/productlist', [ProductController::class, 'index'])->name('admin.productlist');
-Route::get('/newproducts', function () {
-    return view('admin.newproducts');
-});
 
-//NewCategory 
-Route::get('/newcategory', function () {
-    return view('admin.newcategory');
-});
 
-Route::get('/newcategory', function () {
-    // Pass categories to the view so parent options can be selected
-    $categories = Category::all();
-    return view('admin.newcategory', compact('categories'));
-});
 
-Route::get('/newproducts', function () {
-    // Fetch categories where parent_id is null for main categories and others for subcategories
-    $mainCategories = Category::whereNull('parent_id')->get();
-    $subCategories = Category::whereNotNull('parent_id')->get();
-    return view('admin.newproducts', compact('mainCategories', 'subCategories'));
-});
+
 
 
 Route::post('savecategory', [CategoryController::class, 'store'])->name('admin.savecategory');
-Route::get('/categorylist', [CategoryController::class, 'index'])->name('admin.categorylist');
-Route::get('/categories', [CategoryController::class, 'create'])->name('admin.categories');
-// Route::post('/savecategory', [CategoryController::class, 'store']);
 
-Route::get('editcategory/{id}', [CategoryController::class, 'edit']);
 Route::post('updatecategory/{id}', [CategoryController::class, 'update']);
 Route::delete('deletecategory/{id}', [CategoryController::class, 'destroy']);
 
 Route::post('saveproduct', [ProductController::class, 'store']);
 
 Route::delete('/productlist/{id}', [ProductController::class, 'destroy'])->name('admin.destroy');
-Route::get('editproducts/{id}', [ProductController::class, 'edit']);
+
 Route::post('updateproducts/{id}', [ProductController::class, 'update']);

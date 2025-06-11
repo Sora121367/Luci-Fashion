@@ -9,12 +9,15 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
     <!-- Chart.js Library -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+     <script src="https://js.pusher.com/8.4.0/pusher.min.js"></script>
     <script>
         function toggleProducts() {
             var productList = document.getElementById('productList');
             productList.classList.toggle('hidden');
         }
     </script>
+
+     @vite('resources/js/app.js')
     @livewireStyles
 </head>
 
@@ -86,8 +89,8 @@
             {{ $slot }}
         </main>
     </div>
-
-    @livewireScripts
+   
+     @livewireScripts
 </body>
 
 </html>
