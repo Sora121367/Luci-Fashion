@@ -53,7 +53,7 @@
                             @foreach ($products as $index => $product)
                                 <li wire:key="product-{{ $index }}" class="relative border rounded-lg p-3">
                                     <div class="flex gap-3">
-                                        <img src="{{ asset(str_replace('\\', '/', $product['image_path'])) }}"
+                                        <img src="{{ asset('storage/' . $product['image_path']) }}"
                                             alt="" class="w-[150px] h-[180px] object-cover rounded">
                                         <div class="flex-1 space-y-2">
                                             <p class="text-lg font-semibold"> {{ $product['name'] }}</p>
