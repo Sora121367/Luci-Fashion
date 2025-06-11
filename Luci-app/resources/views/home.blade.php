@@ -1,18 +1,31 @@
-<!DOCTYPE html>
-<html lang="en">
+{{-- <!DOCTYPE html>
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+  <title>Pusher Test</title>
+  <meta charset="UTF-8">
+  <script src="https://js.pusher.com/8.4.0/pusher.min.js"></script>
 </head>
 <body>
-     <header>
-        <nav>
-            <div>
-                <p>logo</p>
-            </div>
-        </nav>
-     </header>
+  <h1>Pusher Listening...</h1>
+
+  <script>
+    // ✅ Enable logging to see errors in dev
+    Pusher.logToConsole = true;
+
+    // ✅ Replace with your actual key and cluster
+    const pusher = new Pusher('061e5401ac489a5bb229', {
+      cluster: 'ap1',
+      forceTLS: true
+    });
+
+    // ✅ Subscribe to public channel
+    const channel = pusher.subscribe('my-channel');
+
+    // ✅ Listen to event name (NO DOT)
+    channel.bind('my-event', function (data) {
+      alert('📢 Message: ' + data.message + '\n🕒 Time: ' + data.time);
+      console.log('✅ Received from Pusher:', data);
+    });
+  </script>
 </body>
-</html>
+</html> --}}

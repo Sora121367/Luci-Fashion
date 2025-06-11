@@ -16,9 +16,14 @@ class UserMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-         if (Auth::check() && Auth::user()->reset_code) {
-            return $next($request);
+        //  if (Auth::check() && Auth::user()->reset_code) {
+        //     return $next($request);
+        // }
+        // return redirect('/')->with('error', 'Unauthorized access or reset already completed.');
+
+        if(Auth::guard('web')->check()) { 
+            redirect("/");
         }
-        return redirect('/')->with('error', 'Unauthorized access or reset already completed.');
+        return $next($request);
     }
 }

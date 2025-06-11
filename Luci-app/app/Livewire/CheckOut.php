@@ -73,7 +73,7 @@ class CheckOut extends Component
         if ($order->status == 'Pending') {
             /** @var \App\Models\User $user */
             $user = Auth::user();
-            $user->notify(new OrderCompleted($order));
+             $user->notify(new OrderCompleted($order));
             $admins = \App\Models\Admin::all();
 
             foreach ($admins as $admin) {
