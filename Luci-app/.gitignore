@@ -6,6 +6,7 @@
 /storage/*.key
 /storage/pail
 /vendor
+.env                   # ✅ Add this line
 .phpactor.json
 .phpunit.result.cache
 Homestead.json
@@ -18,5 +19,4 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
-
 

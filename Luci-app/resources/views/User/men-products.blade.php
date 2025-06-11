@@ -15,7 +15,7 @@
                 <div>
                     <ul class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                         @foreach ($subCategory->products as $product)
-                            <x-card src="{{ asset(str_replace('\\', '/', $product['image_path'])) }}" :price="$product['price']"
+                            <x-card src="{{ asset('storage/' . $product['image_path']) }}" :price="$product['price']"
                                 :info="$product['name']" :id="$product['id']"></x-card>
                         @endforeach
                     </ul>

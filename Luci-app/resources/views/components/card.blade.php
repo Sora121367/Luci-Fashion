@@ -3,7 +3,7 @@
 <li class="p-2">
   {{$slot}}
   <a href="/show-product/{{ $id }}">
-    <img src="{{$attributes->get('src')}}" alt="Product Image" class="w-full object-cover"/>
+    <img src="{{$attributes->get('src')}}" alt="Product Image" class="w-full h-112 object-cover rounded-xl shadow-sm"/>
   </a>
   
   <div class="flex justify-between mx-2 pt-2">
