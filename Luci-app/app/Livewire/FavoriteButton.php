@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Livewire;
 
 use Livewire\Component;
@@ -29,6 +30,9 @@ class FavoriteButton extends Component
 
     public function addFavoriteProduct()
     {
+        if (!Auth::check()) {
+            return redirect()->route('login');
+        }
         FavoriteProduct::firstOrCreate([
             'user_id' => Auth::id(),
             'session_id' => session()->getId(),
@@ -38,7 +42,8 @@ class FavoriteButton extends Component
 
     public function removeFavoriteProduct()
     {
-        FavoriteProduct::where('session_id',session()->getId())->first()
+        // dd(session()->getId());
+        FavoriteProduct::where('user_id', Auth::id())->first()
             ->where('products_id', $this->productId)
             ->delete();
     }
