@@ -1,32 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Add New Product</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" />
 </head>
 <body class="bg-gray-100">
 
-    <!-- Include Navbar -->
     @include('layouts.navbar')
 
     <div class="flex">
-        <!-- Include Sidebar -->
         @include('layouts.sidebar')
 
-        <!-- Main Content -->
         <main class="flex-1 p-6">
             <div class="bg-white p-6 rounded-lg shadow-md max-w-3xl mx-auto">
                 <h2 class="text-2xl font-semibold mb-4">Add New Product</h2>
-                <form action="{{ url('saveproduct') }}" method="POST" enctype="multipart/form-data">
+                <form action="{{ route('admin.saveproduct') }}" method="POST" enctype="multipart/form-data">
                     @csrf
 
                     <!-- Product Name -->
                     <div class="mb-4">
                         <label class="block font-medium">Product Name:</label>
-                        <input type="text" name="name" class="border border-gray-400 w-full px-3 py-2 rounded-md">
+                        <input type="text" name="name" class="border border-gray-400 w-full px-3 py-2 rounded-md" required />
                     </div>
 
                     <!-- Main Category -->
@@ -54,20 +51,29 @@
                     <!-- Price -->
                     <div class="mb-4">
                         <label class="block font-medium">Price:</label>
-                        <input type="text" name="price" class="border border-gray-400 w-full px-3 py-2 rounded-md">
+                        <input type="text" name="price" class="border border-gray-400 w-full px-3 py-2 rounded-md" required />
                     </div>
 
-                    <!-- Choose Size (Multiple Options with Checkboxes) -->
-                    <div class="mb-4">
-                        <label class="block font-medium">Choose Size:</label>
-                        <div class="space-y-2">
-                            @foreach(['S', 'M', 'L', 'XL', 'XXL'] as $size)
-                                <label class="inline-flex items-center">
-                                    <input type="checkbox" name="sizes[]" value="{{ $size }}" class="form-checkbox h-5 w-5 text-gray-600">
-                                    <span class="ml-2">{{ $size }}</span>
-                                </label>
-                            @endforeach
-                        </div>
+                    <!-- Sizes -->
+                    <label class="block font-semibold mb-2">Sizes</label>
+                    <div class="flex gap-4 mb-4">
+                        @php
+                            $allSizes = ['S', 'M', 'L', 'XL'];
+                            $selectedSizes = old('sizes', []);
+                        @endphp
+
+                        @foreach ($allSizes as $size)
+                            <label class="inline-flex items-center">
+                                <input 
+                                    type="checkbox" 
+                                    name="sizes[]" 
+                                    value="{{ $size }}" 
+                                    {{ in_array($size, $selectedSizes) ? 'checked' : '' }}
+                                    class="form-checkbox text-indigo-600"
+                                >
+                                <span class="ml-2">{{ $size }}</span>
+                            </label>
+                        @endforeach
                     </div>
 
                     <!-- Description -->
@@ -76,18 +82,30 @@
                         <textarea name="description" class="border border-gray-400 w-full px-3 py-2 rounded-md" rows="4"></textarea>
                     </div>
 
-                    <!-- Product Image -->
+                    <!-- Images -->
                     <div class="mb-4">
-                        <label class="block font-medium">Product Image:</label>
-                        <input type="file" name="image" id="productImage" class="border border-gray-400 w-full px-3 py-2 rounded-md" onchange="previewImage(event)">
-                        
-                        <!-- Image Preview -->
-                        <div id="imagePreviewContainer" class="mt-4">
-                            <img id="imagePreview" src="#" alt="Image Preview" class="hidden w-48 h-48 object-cover rounded border" />
-                        </div>
+                        <label class="block font-medium mb-1">Upload Images (Max 4)</label>
+
+                        <!-- Main Image -->
+                        <label class="block mb-1 font-semibold">Main Image</label>
+                        <input type="file" name="image_path" accept="image/*" class="mb-4" onchange="previewMainImage(event)" />
+                        <img id="mainImagePreview" class="w-48 h-48 object-cover rounded border hidden mb-4" alt="Main Image Preview">
+
+
+                        <label class="block mb-1 font-semibold">Related Images</label>
+                        <input type="file" name="images[]" accept="image/*" class="border border-gray-400 w-full px-3 py-2 rounded-md mb-2" onchange="previewImage(event, 0)">
+                        <input type="file" name="images[]" accept="image/*" class="border border-gray-400 w-full px-3 py-2 rounded-md mb-2" onchange="previewImage(event, 1)">
+                        <input type="file" name="images[]" accept="image/*" class="border border-gray-400 w-full px-3 py-2 rounded-md mb-2" onchange="previewImage(event, 2)">
+
+                        <!-- Image preview container -->
+                        <div id="imagePreviewContainer" class="mt-4 flex gap-4 flex-wrap">
+                            <img id="preview0" class="w-48 h-48 object-cover rounded border hidden" alt="Preview Image 1">
+                            <img id="preview1" class="w-48 h-48 object-cover rounded border hidden" alt="Preview Image 2">
+                            <img id="preview2" class="w-48 h-48 object-cover rounded border hidden" alt="Preview Image 3">
+                        </div>    
                     </div>
 
-                    <!-- Submit Button -->
+                    <!-- Submit -->
                     <button type="submit" class="bg-black text-white px-4 py-2 rounded-md hover:bg-gray-700">Save Product</button>
                 </form>
             </div>
@@ -96,7 +114,7 @@
 
     <!-- JavaScript -->
     <script>
-        // Handle sub-category filtering
+        // Filter sub-categories by main category
         const mainCategory = document.getElementById('mainCategory');
         const subCategory = document.getElementById('subCategory');
         const originalOptions = Array.from(subCategory.options);
@@ -111,19 +129,39 @@
                 }
             });
         });
+        // Preview main image
+        function previewMainImage(event) {
+            const file = event.target.files[0];
+            const preview = document.getElementById('mainImagePreview');
 
-        // Image preview
-        function previewImage(event) {
-            const reader = new FileReader();
-            const imagePreview = document.getElementById('imagePreview');
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.classList.remove('hidden');
+                }
+                reader.readAsDataURL(file);
+            } else {
+                preview.src = '';
+                preview.classList.add('hidden');
+            }
+        }
 
-            reader.onload = function () {
-                imagePreview.src = reader.result;
-                imagePreview.classList.remove('hidden');
-            };
+        // Preview multiple images
+        function previewImage(event, index) {
+            const file = event.target.files[0];
+            const preview = document.getElementById(`preview${index}`);
 
-            if (event.target.files[0]) {
-                reader.readAsDataURL(event.target.files[0]);
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.classList.remove('hidden');
+                }
+                reader.readAsDataURL(file);
+            } else {
+                preview.src = '';
+                preview.classList.add('hidden');
             }
         }
     </script>

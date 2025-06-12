@@ -17,11 +17,6 @@
             </a>
         </li>
         <li>
-            <a href="{{ url('sales') }}" class="flex items-center p-3 rounded-md {{ Request::is('sales') ? 'bg-gray-400' : 'hover:bg-gray-400' }}">
-                <i class="bi bi-cart mr-2"></i> Sales
-            </a>
-        </li>
-        <li>
             <a href="{{ url('customers') }}" class="flex items-center p-3 rounded-md {{ Request::is('customers') ? 'bg-gray-400' : 'hover:bg-gray-400' }}">
                 <i class="bi bi-person-lines-fill mr-2"></i> Customers
             </a>
