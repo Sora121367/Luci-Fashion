@@ -17,14 +17,16 @@ class Product extends Model
         'name',
         'category_id',
         'price',
-        // 'size',
+        'sizes',
         'description',
         'image_path',
-        // 'status',
+        'images',
     ];
 
-    // No need to cast 'size' since it's stored as ENUM (string)
-    // protected $casts = ['size' => 'array'];
+    protected $casts = [
+        'sizes' => 'array',
+        'images' => 'array',
+    ];
 
     protected static function boot()
     {

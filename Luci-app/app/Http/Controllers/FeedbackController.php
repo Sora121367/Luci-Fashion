@@ -16,8 +16,8 @@ class FeedbackController extends Controller
         $completedOrdersCount = Order::where('user_id', $user->id)
             ->where('status', 'Completed')
             ->count();
+
         $ordersCount = Order::where('user_id', $user->id)->count();
-        // dd($completedOrdersCount);
 
         if ($ordersCount < 1 && $completedOrdersCount < 1) {
             return view('User.no-access-report');
@@ -26,18 +26,16 @@ class FeedbackController extends Controller
         return view('User.contact-us');
     }
 
-
     public function store(Request $request)
     {
-
         $request->validate([
             'title' => 'required|string|max:255',
-            'reason' => 'required|string',
+            'reason' => 'required|string|in:Late Delivery,Damaged Products,Other',
             'comment' => 'required|string|min:10',
         ]);
 
         Feedback::create([
-            'user_id' => Auth::id(),
+            'user_id' => Auth::id(), // dynamically get the logged-in user
             'title' => $request->title,
             'reason' => $request->reason,
             'comments' => $request->comment,

@@ -17,11 +17,9 @@
 </head>
 <body class="bg-gray-100">
 
-    <!-- Include Navbar -->
     @include('layouts.navbar')
 
     <div class="flex">
-        <!-- Include Sidebar -->
         @include('layouts.sidebar')
 
         <!-- Page Content -->

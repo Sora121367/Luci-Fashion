@@ -57,24 +57,18 @@
                         <label class="block font-medium">Price:</label>
                         <input type="text" name="price" value="{{ $product->price }}" class="border border-gray-400 w-full px-3 py-2 rounded-md">
                     </div>
-
-                    <!-- Sizes -->
+                    <!-- Sizes (read-only display) -->
                     <div class="mb-4">
-                        <label class="block font-medium">Choose Size:</label>
-                        <div class="space-y-2">
-                            @php
-                                $selectedSizes = json_decode($product->sizes, true) ?? [];
-                            @endphp
-                            @foreach(['S', 'M', 'L', 'XL', 'XXL'] as $size)
-                                <label class="inline-flex items-center mr-4">
-                                    <input type="checkbox" name="sizes[]" value="{{ $size }}"
-                                        class="form-checkbox h-5 w-5 text-gray-600"
-                                        {{ in_array($size, $selectedSizes) ? 'checked' : '' }}>
-                                    <span class="ml-2">{{ $size }}</span>
-                                </label>
+                        <label class="block text-gray-700 font-medium mb-2">Available Sizes</label>
+                        <div class="flex flex-wrap gap-2">
+                            @foreach($product->sizes ?? [] as $size)
+                                <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">{{ $size }}</span>
                             @endforeach
                         </div>
                     </div>
+
+
+                    
 
                     <!-- Description -->
                     <div class="mb-4">
