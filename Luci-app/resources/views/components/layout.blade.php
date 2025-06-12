@@ -11,7 +11,7 @@
 
 </head>
 
-<body>
+<body class="min-h-screen flex flex-col">
     <nav class="fixed w-full shadow-md flex justify-between items-center py-4 px-16  z-50 bg-white ">
         <ul class="flex space-x-4 text-black text-xl">
             <a href="/">
@@ -196,7 +196,7 @@
             </ul>
         </div>
     </nav>
-    <main class="relative pt-20">
+    <main class="flex-grow relative pt-20">
         {{ $slot }}
 
     </main>
