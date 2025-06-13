@@ -1,14 +1,22 @@
-<div>
-    <button wire:click="openModal">
-        <img src="{{ asset('web-images/notification.jpg') }}" alt="Notifications" class="w-8 h-8">
-    </button>
+<div wire:poll.10s>
+    <!-- Notification Icon and Count -->
+    <div class="relative">
+        <button wire:click="openModal">
+            <img src="{{ asset('web-images/notification.jpg') }}" alt="Notifications" class="w-8 h-8">
+        </button>
+        @if($number_notifications > 0)
+            <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full px-1.5">
+                {{ $number_notifications }}
+            </span>
+        @endif
+    </div>
 
     @if($showModal)
-    <div class="fixed inset-0 flex justify-end z-50 ">
+    <div class="fixed inset-0 flex justify-end z-50">
         <!-- Modal backdrop -->
         <div class="fixed inset-0 bg-black opacity-50" wire:click="closeModal"></div>
-    
-        <!-- Modal content (right side, 30% width) -->
+
+        <!-- Modal content -->
         <div class="relative bg-white h-full w-[30%] rounded-l-lg shadow-lg z-10 overflow-y-auto">
             <!-- Modal header -->
             <div class="flex items-center justify-between p-4 border-b">
@@ -40,11 +48,11 @@
                 @else
                     <ul class="flex flex-col gap-4">
                         @foreach ($notifications as $index => $notification)
-                        <li wire:key="product-{{ $index }}" class="relative border rounded-lg p-3">
+                        <li wire:key="notification-{{ $notification['id'] }}"class="relative border rounded-lg p-3">
                             <div class="flex flex-col gap-3">
                                 <h1>Admin</h1>
-                                <p>{{$notification['message']}}</p>
-                                <p>{{$notification['createdat']}}</p>
+                                <p>{{ $notification['message'] }}</p>
+                                <p class="text-sm text-gray-500">{{ $notification['createdat'] }}</p>
                             </div>
 
                             <!-- Remove button -->

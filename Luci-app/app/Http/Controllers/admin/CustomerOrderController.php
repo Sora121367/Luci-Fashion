@@ -5,7 +5,10 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Order;
+use App\Notifications\OrderCompleted;
+use App\Notifications\UserNotification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CustomerOrderController extends Controller
 {
@@ -83,6 +86,14 @@ class CustomerOrderController extends Controller
         $order = Order::findOrFail($orderId);
         $order->status = $request->status;
         $order->save();
+
+
+        if (in_array($order->status, ['Accepted', 'Completed', 'Rejected', 'Pending'])) {
+            if ($order->user) {
+                $order->user->notify(new UserNotification($order));
+            }
+        }
+
 
         return response()->json(['message' => 'Order status updated successfully']);
     }

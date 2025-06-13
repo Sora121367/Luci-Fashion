@@ -69,18 +69,20 @@ class CheckOut extends Component
 
 
 
-        // Notify user if order is completed
-        if ($order->status == 'Pending') {
-            /** @var \App\Models\User $user */
-            $user = Auth::user();
-             $user->notify(new OrderCompleted($order));
-            $admins = \App\Models\Admin::all();
+        // // Notify user if order is completed
+        // if ($order->status == 'Accepted') {
+        //     /** @var \App\Models\User $user */
+        //     $user = Auth::user();
+        //     $user->notify(new OrderCompleted($order));
+        // }
 
-            foreach ($admins as $admin) {
-                $admin->notify(new OrderCompleted($order));
-            }
+        // Just send notification to admin with the order
+
+        $admins = \App\Models\Admin::all();
+
+        foreach ($admins as $admin) {
+            $admin->notify(new OrderCompleted($order));
         }
-
 
         // 🧹 Clear the cart after successful checkout
         $this->clearCart();

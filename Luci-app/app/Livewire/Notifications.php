@@ -2,43 +2,13 @@
 
 namespace App\Livewire;
 
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
 class Notifications extends Component
 {
     public $showModal = false;
     public $title = 'Notification';
-    public $number_notifications = 1;
-
-    public $notifications = [];
-
-    public function mount()
-    {
-        // Initialize product list with default values
-        $this->notifications = [
-            [
-                "id" => "1",
-                "message" => "Hello From Admin",
-                "createdat" => "2025/04/15",
-            ],
-            [
-                "id" => "2",
-                "message" => "Hello From Admin",
-                "createdat" => "2025/04/15",
-            ],
-            [
-                "id" => "3",
-                "message" => "Hello From Admin",
-                "createdat" => "2025/04/15",
-            ],
-        ];
-    }
-
-    public function getProductQuantityProperty()
-    {
-        // Live calculation of product quantity
-        return count($this->products);
-    }
 
     public function openModal()
     {
@@ -51,15 +21,54 @@ class Notifications extends Component
     }
 
     public function removeNotification($index)
-    {
-        // Remove product at given index
-        unset($this->notifications[$index]);
+{
+    if (Auth::check()) {
+        $user = Auth::user();
+        $notification = $user->notifications
+            ->where('type', 'App\Notifications\UserNotification')
+            ->values()
+            ->get($index);
 
-        // Reindex array to prevent Livewire reactivity issues
-        $this->notifications = array_values($this->notifications);
+        if ($notification) {
+            $notification->delete();
+        }
+
+        // 🔄 Force Livewire to refresh component data
+        $this->dispatch('$refresh');
     }
+}
+
+
+    public function getUserNotifications()
+    {
+        if (Auth::check()) {
+            $userNotifications = Auth::user()->notifications;
+
+            return $userNotifications
+                ->where('type', 'App\Notifications\UserNotification')
+                ->map(function ($notification) {
+                    return [
+                        'id' => $notification->id,
+                        'title' => $notification->data['title'] ?? 'No Title',
+                        'message' => $notification->data['message'] ?? '',
+                        'order_id' => $notification->data['order_id'] ?? '',
+                        'status' => $notification->data['status'] ?? '',
+                        'createdat' => $notification->created_at->format('Y/m/d'),
+                    ];
+                })->values()->toArray();
+        }
+
+        return [];
+    }
+
     public function render()
     {
-        return view('livewire.notifications');
+        $notifications = $this->getUserNotifications();
+        $number_notifications = count($notifications);
+
+        return view('livewire.notifications', [
+            'notifications' => $notifications,
+            'number_notifications' => $number_notifications,
+        ]);
     }
 }
