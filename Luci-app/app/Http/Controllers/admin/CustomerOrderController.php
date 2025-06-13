@@ -5,10 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Order;
-use App\Notifications\OrderCompleted;
 use App\Notifications\UserNotification;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class CustomerOrderController extends Controller
 {
@@ -25,7 +23,8 @@ class CustomerOrderController extends Controller
      */
     public function getCustomers()
     {
-        $customers = User::withCount('orders')
+        $customers = User::whereHas('orders')
+            ->withCount('orders')
             ->withSum('orders', 'total_price')
             ->get()
             ->map(function ($user) {
@@ -47,7 +46,8 @@ class CustomerOrderController extends Controller
      */
     public function getOrdersByUser($userId)
     {
-        $orders = Order::with(['items.product'])->where('user_id', $userId)
+        $orders = Order::with(['items.product'])
+            ->where('user_id', $userId)
             ->orderBy('created_at', 'desc')
             ->get()
             ->map(function ($order) {
@@ -64,7 +64,7 @@ class CustomerOrderController extends Controller
                                 'id' => $item->product->id,
                                 'name' => $item->product->name,
                                 'price' => $item->product->price,
-                                'image_path' => asset($item->product->image_path), // Full URL to image
+                                'image_path' => asset('storage/' . $item->product->image_path), // Ensure correct public URL
                             ],
                         ];
                     }),
@@ -77,6 +77,7 @@ class CustomerOrderController extends Controller
     /**
      * API: Update the status of an order.
      */
+ 
     public function updateOrderStatus(Request $request, $orderId)
     {
         $request->validate([
