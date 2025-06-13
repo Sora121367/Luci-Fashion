@@ -99,7 +99,7 @@
                     sizeHtml += `<li>
                         Size: ${item.size}, Quantity: ${item.quantity} <br>
                         Product: ${item.product.name} <br>
-                        <img src="${item.product.image_path}" alt="${item.product.name}" class="w-16 h-16 object-cover mt-1">
+                        <img src="./storage/${item.product.image_path}" alt="${item.product.name}" class="w-16 h-16 object-cover mt-1">
                     </li>`;
                 });
                 sizeHtml += '</ul></div>';

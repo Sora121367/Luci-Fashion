@@ -1,11 +1,10 @@
 <x-layout>
     <div class="p-4 py-16 mx-28 flex gap-2">
         <h3 class="text-2xl">Men({{ $totalProducts }} items)
-            <i class="bi bi-filter-left si">
-            </i>
         </h3>
+        <livewire:filter :main-category="$name"/>
     </div>
-    @foreach ($subCategories as $subCategory)
+    {{-- @foreach ($subCategories as $subCategory)
         <div class="p-4 mx-28">
             <h2 class="text-4xl font-extrabold pb-4">{{ $subCategory->name }}</h2>
 
@@ -22,5 +21,6 @@
                 </div>
             @endif
         </div>
-    @endforeach
+    @endforeach --}}
+    <livewire:product-list :main-category="$name" />
 </x-layout>
