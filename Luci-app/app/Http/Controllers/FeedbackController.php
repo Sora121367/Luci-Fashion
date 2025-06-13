@@ -11,6 +11,9 @@ class FeedbackController extends Controller
 {
     public function index()
     {
+        if (!Auth::check()) {
+            return redirect()->route('login');
+        }
         $user = Auth::user();
 
         $completedOrdersCount = Order::where('user_id', $user->id)
