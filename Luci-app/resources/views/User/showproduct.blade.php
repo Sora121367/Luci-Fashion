@@ -1,18 +1,8 @@
 <x-layout>
     <div class="flex flex-col md:flex-row py-8 px-4 md:py-16 md:px-8 lg:mx-16 xl:mx-32 gap-8 md:gap-16">
-        {{-- Image Section --}}
-        <div class="flex gap-4 md:gap-8">
-            <div class="flex flex-col gap-y-3">
-                <img src="{{ asset('product-images/related-prod-1.jpg') }}" alt="Related-Product 1"
-                    class="w-16 h-16 md:w-20 md:h-20 object-cover rounded-md hover:opacity-80 cursor-pointer transition">
-                <img src="{{ asset('product-images/related-prod-2.jpg') }}" alt="Related-Product 2"
-                    class="w-16 h-16 md:w-20 md:h-20 object-cover rounded-md hover:opacity-80 cursor-pointer transition">
-                <img src="{{ asset('product-images/related-prod-3.jpg') }}" alt="Related-Product 3"
-                    class="w-16 h-16 md:w-20 md:h-20 object-cover rounded-md hover:opacity-80 cursor-pointer transition">
-            </div>
-            <img src="{{ asset('storage/' . $product['image_path']) }}" alt="Main Product"
-                class="w-64 md:w-80 lg:w-96 object-cover rounded-lg shadow-sm">
-        </div>
+        {{-- Image Section --}}   
+        <livewire:images :images="$product->images" :mainImage="$product->image_path"/>
+
 
         {{-- Details Section --}}
         <div class="w-full md:w-1/2 space-y-6">
@@ -87,8 +77,8 @@
     <div class="flex flex-col md:flex-row py-8 px-4 md:py-16 md:px-8 lg:mx-16 xl:mx-32 gap-8 md:gap-16">
         <ul class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
             @foreach ($relatedProducts as $product)
-                <x-card src="{{ asset('storage/' . $product['image_path']) }}" :price="$product['price']"
-                    :info="$product['name']" :id="$product['id']"></x-card>
+                <x-card src="{{ asset('storage/' . $product['image_path']) }}" :price="$product['price']" :info="$product['name']"
+                    :id="$product['id']"></x-card>
             @endforeach
         </ul>
     </div>
