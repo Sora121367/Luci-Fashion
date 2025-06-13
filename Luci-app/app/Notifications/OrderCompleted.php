@@ -28,26 +28,13 @@ class OrderCompleted extends Notification implements ShouldQueue
      */
     public function via(object $notifiable): array
     {
-        return ['mail', 'database'];
+        return ['database'];
     }
 
     /**
      * Get the mail representation of the notification.
      */
-    public function toMail($notifiable)
-    {
-        return (new MailMessage)
-            ->subject('Your Order #' . $this->order->id . ' is Complete')
-            ->greeting('Hello ' . $notifiable->Firstname . ',')
-            ->line('Thank you for your order! Your order has been completed successfully.')
-            ->line('Order Details:')
-            ->line('Order ID: ' . $this->order->id)
-            ->line('Total Price: $' . number_format($this->order->total_price, 2))
-            ->action('View Your Order', url('/orders/' . $this->order->id))
-            ->line('We appreciate your business!');
-    }
-
-
+ 
     /**
      * Store in database.
      */

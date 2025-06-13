@@ -79,7 +79,7 @@ class AuthController extends Controller
     $credentials = $request->only('email', 'password');
 
     // First check if admin exists by email in admins table
-    $admin = Admin::where('email', $request->email)->first();
+     $admin = Admin::where('email', $request->email)->first();
 
     if ($admin) {
         if (!$admin->is_verified) {
@@ -129,22 +129,26 @@ class AuthController extends Controller
         return Socialite::driver('google')->redirect();
     }
 
-    public function handleGoogle()
-    {
-        try {
-            // Retrieve the Google user information
-            $googleUser = Socialite::driver('google')->user();
+public function handleGoogle()
+{
+    try {
+        $googleUser = Socialite::driver('google')->user(); 
 
-            $findUser = User::where('google_id', $googleUser->id)->first();
+        // First, try to find user by google_id
+        $user = User::where('google_id', $googleUser->id)->first();
 
+        if (!$user) {
+            // If no user with google_id, try finding by email
+            $user = User::where('email', $googleUser->email)->first();
 
-            if ($findUser) {
-                // If the user exists, log them in
-                Auth::login($findUser);
-                return redirect()->intended('/');
+            if ($user) {
+                // Link Google account to existing email/password user
+                $user->update([
+                    'google_id' => $googleUser->id,
+                ]);
             } else {
-
-                $googleUserData = [
+                // No user found, create a new one
+                $user = User::create([
                     'google_id' => $googleUser->id,
                     'email' => $googleUser->email,
                     'Firstname' => $googleUser->user['given_name'] ?? '',
@@ -153,25 +157,22 @@ class AuthController extends Controller
                     'city' => 'Unknown',
                     'gender' => 'Unknown',
                     'phonenumber' => 'Unknown',
-                    'password' => bcrypt('default_password'),
-                ];
-
-                // Create or update the user
-                $user = User::create($googleUserData);
-
-                // Log the user in
-                Auth::login($user);
-
-                return redirect('/'); // Redirect the user after login
+                    'password' => bcrypt(Str::random(16)), // don't use default string password
+                ]);
             }
-        } catch (Exception $e) {
-            // Return JSON response in case of failure
-            return response()->json([
-                'error' => 'Google login failed. Please try again.',
-                'exception' => $e->getMessage()
-            ], 400);
         }
+
+        // Log the user in
+        Auth::login($user);
+
+        return redirect()->intended('/');
+    } catch (Exception $e) {
+        return response()->json([
+            'error' => 'Google login failed. Please try again.',
+            'exception' => $e->getMessage()
+        ], 400);
     }
+}
 
 
 
