@@ -77,22 +77,24 @@ class UserProductController extends Controller
     }
     public function menProducts()
     {
-        $mainCategory = Category::where('name', 'Mens')->firstOrFail();
+        $name = 'Mens';
+        $mainCategory = Category::where('name', $name)->firstOrFail();
 
         // Eager load each sub-category's products
         $subCategories = $mainCategory->children()->with('products')->get();
         $totalProducts = $subCategories->sum(fn($cat) => $cat->products->count());
 
-        return view('User.men-products', compact('subCategories','totalProducts'));
+        return view('User.men-products', compact('subCategories','totalProducts','name'));
     }
 
     public function womenProducts()
     {
-        $mainCategory = Category::where('name', 'Women')->firstOrFail();
+        $name = "Women";
+        $mainCategory = Category::where('name', $name)->firstOrFail();
 
         // Eager load each sub-category's products
         $subCategories = $mainCategory->children()->with('products')->get();
         $totalProducts = $subCategories->sum(fn($cat) => $cat->products->count());
-        return view('User.women-products', compact('subCategories','totalProducts'));
+        return view('User.women-products', compact('subCategories','totalProducts','name'));
     }
 }
